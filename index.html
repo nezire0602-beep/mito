@@ -85,6 +85,13 @@ body{font-family:'Zen Maru Gothic',sans-serif;background:var(--warm);color:var(-
 .guide-alert ul{list-style:none;padding:0}
 .guide-alert li{font-size:.78rem;color:#c62828;padding:3px 0 3px 14px;position:relative}
 .guide-alert li::before{content:'';position:absolute;left:0;top:50%;width:5px;height:5px;background:var(--rose);border-radius:50%;transform:translateY(-50%)}
+/* Guide accordion */
+.guide-cat{background:#fff;border-radius:14px;margin-bottom:10px;border:1px solid rgba(200,164,110,.12);overflow:hidden}
+.guide-cat-title{padding:14px 16px;font-size:.88rem;font-weight:700;color:var(--deep);cursor:pointer;display:flex;align-items:center;gap:8px;position:relative;user-select:none}
+.guide-cat-title::after{content:'&#9662;';position:absolute;right:16px;font-size:.7rem;color:var(--text-light);transition:transform .25s}
+.guide-cat.open .guide-cat-title::after{transform:rotate(180deg)}
+.guide-cat-body{max-height:0;overflow:hidden;transition:max-height .35s ease;padding:0 16px}
+.guide-cat.open .guide-cat-body{max-height:3000px;padding:0 16px 14px}
 /* Sleep bar */
 .sleep-bar{height:18px;border-radius:9px;background:#e8eaf6;position:relative;margin:6px 0;overflow:hidden}
 .sleep-bar .filled{height:100%;border-radius:9px;background:linear-gradient(90deg,#7986cb,#9fa8da)}
@@ -265,81 +272,92 @@ body{font-family:'Zen Maru Gothic',sans-serif;background:var(--warm);color:var(-
 
 <!-- GUIDE -->
 <div class="tab-content" id="tab-guide">
-  <div class="guide-section"><h3>おしっこ</h3><p>十分にミルク・母乳を飲んでいれば、薄い色のおしっこが1日6〜8回出ます。</p><p class="note">※ オレンジ色の尿 → 腎臓が未熟なため。出血ではなく自然になくなります。</p></div>
-  <div class="guide-section"><h3>うんち</h3><p>生後すぐは黒緑色（胎便）、2〜3日で黄色混じり、4〜5日で黄色い泥状に。母乳中心だと水っぽく、ミルク中心だとやや硬め。</p><p class="note">※ 1日出ない・お腹が張る → 綿棒で肛門を刺激。色は便色カードで確認。</p></div>
-  <div class="guide-section"><h3>嘔吐（溢乳）</h3><p>げっぷと一緒に少量吐いたり、口からミルクが流れるのは「溢乳（いつにゅう）」。赤ちゃんの胃は吐きやすい形なので心配いりません。</p><p class="note">！ 授乳のたびに噴水のように吐く場合は受診してください。</p></div>
-  <div class="guide-section"><h3>黄疸（おうだん）</h3><p>肌や白目が黄色くなる生理的黄疸は、日本人の赤ちゃんの90%以上に出現。肝臓が未熟でビリルビンを排出しにくいため。生後4〜5日がピーク、1〜2週間で落ち着きます。</p><p class="note">※ 母乳育児で1か月以上続くこともあるが、元気で飲みがよければ安心。</p></div>
-  <div class="guide-section"><h3>体温</h3><p>新生児の平熱は大人より高めの37.0℃前後。体温調節が未熟で、些細なことで上がりやすい。高い時は室温や服を調整し、脇で再測定を。</p><p class="note">※ 耳の体温計は誤差が大きいので、脇での測定がおすすめ。</p></div>
-  <div class="guide-section"><h3>鼻・くしゃみ・しゃっくり</h3><p>フガフガ・グーグーという音は鼻の穴が狭いだけ。粘膜が敏感でくしゃみが多く、横隔膜が未熟でしゃっくりも頻繁。すべて心配不要です。</p></div>
-  <div class="guide-section"><h3>スキンケア</h3><p>おむつかぶれ：こまめに替え、優しく拭く。ひどい時はお湯で洗い流す。首・耳の後ろ・脇は密着部分がただれやすいので、しっかり洗いましょう。</p></div>
-  <div class="guide-section"><h3>赤ちゃんの免疫</h3><p>お母さんからもらった免疫と母乳の免疫で守られています。生後半年頃までは病気にかかりにくいと言われています。</p></div>
-  <div class="guide-alert"><h3>こんなときは病院に相談</h3><ul><li>便の色が便色カード1〜3番</li><li>授乳のたびに噴水状に吐く</li><li>黄疸が強く感じる</li><li>おへその赤み・臭いが強い</li><li>38℃以上の発熱が続く</li><li>ぐったり・飲みが悪い</li></ul></div>
+  <div style="font-size:.8rem;color:var(--text-light);text-align:center;margin-bottom:14px">タップで開閉できます</div>
 
-  <!-- 退院準備ガイド -->
-  <div style="margin-top:32px;padding-top:20px;border-top:2px solid rgba(200,164,110,.15)">
-    <div style="font-size:.95rem;font-weight:700;color:var(--deep);margin-bottom:16px;text-align:center">退院〜1か月の過ごし方</div>
+  <!-- カテゴリ1: からだのこと -->
+  <div class="guide-cat" onclick="this.classList.toggle('open')">
+    <div class="guide-cat-title">&#x1F476; からだのこと</div>
+    <div class="guide-cat-body">
+      <div class="guide-section"><h3>おしっこ</h3><p>十分にミルク・母乳を飲んでいれば、薄い色のおしっこが1日6〜8回出ます。</p><p class="note">※ オレンジ色の尿 → 腎臓が未熟なため。出血ではなく自然になくなります。</p></div>
+      <div class="guide-section"><h3>うんち</h3><p>生後すぐは黒緑色（胎便）、2〜3日で黄色混じり、4〜5日で黄色い泥状に。母乳中心だと水っぽく、ミルク中心だとやや硬め。</p><p class="note">※ 1日出ない・お腹が張る → 綿棒で肛門を刺激。色は便色カードで確認。</p></div>
+      <div class="guide-section"><h3>嘔吐（溢乳）</h3><p>げっぷと一緒に少量吐いたり、口からミルクが流れるのは「溢乳（いつにゅう）」。赤ちゃんの胃は吐きやすい形なので心配いりません。</p><p class="note">！ 授乳のたびに噴水のように吐く場合は受診してください。</p></div>
+      <div class="guide-section"><h3>黄疸（おうだん）</h3><p>肌や白目が黄色くなる生理的黄疸は、日本人の赤ちゃんの90%以上に出現。肝臓が未熟でビリルビンを排出しにくいため。生後4〜5日がピーク、1〜2週間で落ち着きます。</p><p class="note">※ 母乳育児で1か月以上続くこともあるが、元気で飲みがよければ安心。</p></div>
+      <div class="guide-section"><h3>体温</h3><p>新生児の平熱は大人より高めの37.0℃前後。体温調節が未熟で、些細なことで上がりやすい。高い時は室温や服を調整し、脇で再測定を。</p><p class="note">※ 耳の体温計は誤差が大きいので、脇での測定がおすすめ。</p></div>
+      <div class="guide-section"><h3>鼻・くしゃみ・しゃっくり</h3><p>フガフガ・グーグーという音は鼻の穴が狭いだけ。粘膜が敏感でくしゃみが多く、横隔膜が未熟でしゃっくりも頻繁。すべて心配不要です。</p></div>
+      <div class="guide-section"><h3>スキンケア</h3><p>おむつかぶれ：こまめに替え、優しく拭く。ひどい時はお湯で洗い流す。首・耳の後ろ・脇は密着部分がただれやすいので、しっかり洗いましょう。</p></div>
+      <div class="guide-section"><h3>赤ちゃんの免疫</h3><p>お母さんからもらった免疫と母乳の免疫で守られています。生後半年頃までは病気にかかりにくいと言われています。</p></div>
+    </div>
   </div>
 
-  <div class="guide-section"><h3>退院の交通手段</h3><p>新生児は免疫が少ないため、公共交通機関はおすすめできません。食事や買い物などの寄り道はせず、直接ご自宅やご実家へ帰りましょう。</p><p class="note">自家用車の場合、チャイルドシートの準備を。初めて使用する場合は事前に設置・練習しておきましょう。</p></div>
-
-  <div class="guide-section"><h3>お部屋の準備</h3><p>赤ちゃんをどこに寝かせるか決めましょう。物が落ちてこないか、すきま風や直射日光・冷暖房の風が直接当たらないか確認。間取りによって昼と夜で過ごす場所を変えてもOKですが、常に目が届く場所にしましょう。</p><p class="note">実家に帰る方は、自宅のお部屋も同時に考えておくと安心です。</p></div>
-
-  <div class="guide-section"><h3>事故予防 ①転落</h3><p>新生児は寝返りができませんが、足で蹴る力が十分にあり、自力で180度回転します。ベッドの柵は必ず上げ、ベビーバスチェアなどではベルトを装着しましょう。</p><p class="note">！ 一瞬でもソファやベッドの端に寝かせてはいけません。一番重たい頭から転落します。</p></div>
-
-  <div class="guide-section"><h3>事故予防 ②窒息</h3><p>偶然手に届いたもので顔を覆うことがあります。寝返りができるようになるまでは、赤ちゃんの周りにおもちゃやタオルは置かないようにしましょう。布団は硬いものを使用し、ベッドと壁の隙間に注意。</p><p class="note">！ 掛布団の上やクッションに寝かすことは止めましょう。</p></div>
-
-  <div class="guide-section"><h3>事故予防 ③SIDS（乳幼児突然死症候群）</h3><p>赤ちゃんが眠っている間に突然死亡してしまうことをいい、日本では年間150件くらい発生しています。要因として、うつぶせ寝や喫煙が考えられています。</p><p class="note">1歳になるまでうつぶせ寝はやめ、仰向けで寝かせましょう。赤ちゃんがいる部屋での喫煙や、喫煙後すぐに近づくことは避けましょう。</p></div>
-
-  <div class="guide-alert" style="margin-top:12px"><h3>退院直後の事故に注意</h3><ul><li>育児に慣れていない時期こそ予測がつかず事故につながる</li><li>事故は一瞬の隙、油断で起こる</li><li>家族みんなで気をつけましょう</li></ul></div>
-
-  <!-- 沐浴ガイド -->
-  <div style="margin-top:32px;padding-top:20px;border-top:2px solid rgba(200,164,110,.15)">
-    <div style="font-size:.95rem;font-weight:700;color:var(--deep);margin-bottom:16px;text-align:center">毎日の沐浴</div>
+  <!-- カテゴリ2: 授乳 -->
+  <div class="guide-cat" onclick="this.classList.toggle('open')">
+    <div class="guide-cat-title">&#x1F37C; 授乳・ミルク</div>
+    <div class="guide-cat-body">
+      <div class="guide-section"><h3>帰宅後の授乳準備</h3><p>退院直前に授乳をしますが、帰ってすぐ次の授乳時間になります。退院時に母乳だけで育児できる人は少ないです。ミルク、哺乳瓶や搾乳器の消毒を事前に済ませておきましょう。</p><p class="note">病院が使用しているミルクメーカーは決まっていません。ミルク缶は開封から1か月の使用期限です。まずは小さいミルク缶を準備しておきましょう。</p></div>
+      <div class="guide-section"><h3>授乳時間と回数</h3><p>退院後は、赤ちゃんが泣いたら授乳をする「自律授乳」で育てていきましょう。赤ちゃんは胃が小さく、一度にたくさんの量を飲めません。お腹が空いているのに眠り続けることもあります。</p><p class="note">！ 1か月健診までは<strong style="color:var(--rose)">3時間空いたら起こして</strong>授乳をしましょう。母乳は欲しがるサインがあれば何回でもOK。ミルクは母乳よりカロリーが高く消化吸収が悪いため、3時間は空けるようにしましょう。</p></div>
+      <div class="guide-section"><h3>飲ませる量</h3><p>退院時に、どれぐらい母乳が出ているか、赤ちゃんの大きさ、生まれてからの日数などから、産後健診1までの授乳方法を個別で説明されます。</p><p class="note">新生児は満腹を感じる機能が発達しておらず、与えれば与えるだけミルクを飲むため注意しましょう。薄めたり目分量で作らないように。満1か月以降のミルクだけの目安量が缶に明記されています。</p></div>
+    </div>
   </div>
 
-  <div class="guide-section"><h3>なぜ沐浴が必要？</h3><p>新生児は大人の2倍もの汗をかき、皮脂がたくさん分泌されます。しかし、お肌のバリア機能が充分でなく、臍の緒の付け根も乾燥しておらず、大人と一緒の浴槽に入ると感染を起こしやすいです。</p><p class="note">1か月健診が終わるまでは、大人と一緒の入浴は避け、沐浴を行いましょう。</p></div>
-
-  <div class="guide-section"><h3>インバスとアウトバス</h3><p><strong>インバス：</strong>お湯の中で赤ちゃんを洗う方法。赤ちゃんが泣いたり動くので支えるのが難しい。<br><strong>アウトバス：</strong>沐浴用のマットやお湯の入っていないベビーバスにタオルを敷き、寝かせて洗う方法。赤ちゃんを支える必要がなく、初めて沐浴する人でも安心です。</p></div>
-
-  <div class="guide-section"><h3>沐浴の時間帯</h3><p>朝・昼・夜いつでもかまいません。大人が二人以上いる時が好ましいです。赤ちゃんの生活リズムをつけるためには、毎日同じような時間帯がいいでしょう。</p><p class="note">沐浴後に興奮して寝つかない場合は、お昼に沐浴することをおすすめします。</p></div>
-
-  <div class="guide-section"><h3>沐浴する場所</h3><p>中腰の体勢は体への負担が大きく、立って洗う方が楽にできます。室温は適切か、着替えのスペースはあるか、マットやベビーバスが置けるか、お湯の準備や破棄が簡単にできるかを確認しましょう。</p><p class="note">！ お風呂の浴槽の蓋の上は転落する危険があるのでやめましょう。</p></div>
-
-  <!-- 赤ちゃんの生活リズム -->
-  <div style="margin-top:32px;padding-top:20px;border-top:2px solid rgba(200,164,110,.15)">
-    <div style="font-size:.95rem;font-weight:700;color:var(--deep);margin-bottom:16px;text-align:center">赤ちゃんの生活リズム</div>
+  <!-- カテゴリ3: 沐浴・お臍ケア -->
+  <div class="guide-cat" onclick="this.classList.toggle('open')">
+    <div class="guide-cat-title">&#x1F6C1; 沐浴・お臍ケア</div>
+    <div class="guide-cat-body">
+      <div class="guide-section"><h3>なぜ沐浴が必要？</h3><p>新生児は大人の2倍もの汗をかき、皮脂がたくさん分泌されます。しかし、お肌のバリア機能が充分でなく、臍の緒の付け根も乾燥しておらず、大人と一緒の浴槽に入ると感染を起こしやすいです。</p><p class="note">1か月健診が終わるまでは、大人と一緒の入浴は避け、沐浴を行いましょう。</p></div>
+      <div class="guide-section"><h3>インバスとアウトバス</h3><p><strong>インバス：</strong>お湯の中で赤ちゃんを洗う方法。赤ちゃんが泣いたり動くので支えるのが難しい。<br><strong>アウトバス：</strong>沐浴用のマットやお湯の入っていないベビーバスにタオルを敷き、寝かせて洗う方法。赤ちゃんを支える必要がなく、初めて沐浴する人でも安心です。</p></div>
+      <div class="guide-section"><h3>沐浴の時間帯</h3><p>朝・昼・夜いつでもかまいません。大人が二人以上いる時が好ましいです。赤ちゃんの生活リズムをつけるためには、毎日同じような時間帯がいいでしょう。</p><p class="note">沐浴後に興奮して寝つかない場合は、お昼に沐浴することをおすすめします。</p></div>
+      <div class="guide-section"><h3>沐浴する場所</h3><p>中腰の体勢は体への負担が大きく、立って洗う方が楽にできます。室温は適切か、着替えのスペースはあるか、マットやベビーバスが置けるか、お湯の準備や破棄が簡単にできるかを確認しましょう。</p><p class="note">！ お風呂の浴槽の蓋の上は転落する危険があるのでやめましょう。</p></div>
+      <div class="guide-section"><h3>お臍のそうじ</h3><p>沐浴の後、毎日お臍のそうじをしましょう。臍の緒がついていても、とれた後でも、同じように1か月健診まで続けてください。</p><p>用意するもの：<strong>綿棒1〜2本</strong>（ベビー用ではなく、普通の綿棒で大丈夫です）</p></div>
+      <div class="guide-section"><h3>お臍そうじの手順</h3><p>おしっこやうんちをしてもいいように、おむつを敷きかるく当てておきます。綿棒を片手で持ち、もう片方の手はお臍の根元が見えるようにお臍を広げます。綿棒を転がすように、お臍の根元の水分や汚れを拭き取ります。片側が終わったらもう片側も同じように。</p><p class="note">そうじをしている時に赤ちゃんが泣くことがあります。痛々しく見えるかもしれませんが、臍の緒は神経が通っていないため赤ちゃんは痛くありません。</p></div>
+      <div class="guide-section"><h3>臍の緒がまだ付いている時</h3><p>乾燥して硬くなっているお臍を立てて、根元の部分をしっかり拭き取りましょう。お臍がとれて根元がしっかり乾燥するまで、毎日沐浴のあとに続けましょう。</p><p class="note">臍の緒は、お母さんから赤ちゃんへ栄養を運ぶための血液が流れていたので、取れた後にじわっと出血したり、かさぶたのように血のかたまりが付くこともありますが心配ありません。</p></div>
+    </div>
   </div>
 
-  <div class="guide-section"><h3>退院直後のリズム</h3><p>次の授乳までずっと眠っていることは少なく、お腹の中にいた時と同様に30分前後で起きてくることもあります。夜行性で、お腹の中で一番動いていた時間が活発なこともあります。</p><p class="note">夜、寝る前にミルクをたくさん飲ませたり、部屋の照明を消すなどは効果がありません。体内時計が整うまでしばらく待ちましょう。</p></div>
-
-  <div class="guide-section"><h3>生後2週間頃</h3><p>わずか2週間でも、少しずつ要求してくるようになります。横抱っこを嫌がる→縦で抱っこ！　座ってるのがわかるの？→立って、ゆらゆらして！　抱っこで寝たのに布団に寝かせると起きる（背中スイッチ）…など。</p><p class="note">泣き声が大きくなり焦るかもしれませんが、赤ちゃんが眠るには安心させてあげることが一番大切です。</p></div>
-
-  <div class="guide-section"><h3>生後1か月頃</h3><p>この頃から夜行性が終わり、夜の方が寝てくれるようになり少し楽に感じる時期です。その反面、昼は授乳の後でも起きており、かまってほしいといった要求が強くなります。</p><p class="note">お腹が空いた時、眠い時、甘えている時など、泣き方に変化が出てくるので要求がわかりやすくなります。お腹がいっぱいで抱っこされている幸せなタイミングで「にこっ」と笑う表情もたくさん見られるようになります。</p></div>
-
-  <div class="guide-section"><h3>泣き止まない時</h3><p>「寝てくれない」と思い、ミルクをどんどん飲ませると、苦しくて泣いたり、吐いたりと逆効果になることもあります。自分に余裕がない時に泣き続けられると、イライラしてしまって当然です。</p><p class="note">！ そんな時は「揺さぶられっ子症候群」を思い出してください。激しく揺さぶることは絶対にやめましょう。抱き癖がつくと言われることもありますが、放っておくよりも抱っこで安心させてあげましょう。</p></div>
-
-  <div class="guide-section"><h3>安心して眠れる方法を探そう</h3><p>赤ちゃんにとって安心できる方法はさまざまです。添い寝でトントン♪（お母さんの匂いが大好き）、ミルクのあと抱っこでゆらゆら♪、おひな巻き（お腹の中にいた時と同じ手足を曲げ丸く包んであげる）など、おっぱいに代わる技を見つけましょう。</p></div>
-
-  <!-- 母乳やミルクの飲ませ方 -->
-  <div style="margin-top:32px;padding-top:20px;border-top:2px solid rgba(200,164,110,.15)">
-    <div style="font-size:.95rem;font-weight:700;color:var(--deep);margin-bottom:16px;text-align:center">母乳やミルクの飲ませ方</div>
+  <!-- カテゴリ4: 生活リズム・寝かしつけ -->
+  <div class="guide-cat" onclick="this.classList.toggle('open')">
+    <div class="guide-cat-title">&#x1F319; 生活リズム・寝かしつけ</div>
+    <div class="guide-cat-body">
+      <div class="guide-section"><h3>退院直後のリズム</h3><p>次の授乳までずっと眠っていることは少なく、お腹の中にいた時と同様に30分前後で起きてくることもあります。夜行性で、お腹の中で一番動いていた時間が活発なこともあります。</p><p class="note">夜、寝る前にミルクをたくさん飲ませたり、部屋の照明を消すなどは効果がありません。体内時計が整うまでしばらく待ちましょう。</p></div>
+      <div class="guide-section"><h3>生後2週間頃</h3><p>わずか2週間でも、少しずつ要求してくるようになります。横抱っこを嫌がる→縦で抱っこ！　座ってるのがわかるの？→立って、ゆらゆらして！　抱っこで寝たのに布団に寝かせると起きる（背中スイッチ）…など。</p><p class="note">泣き声が大きくなり焦るかもしれませんが、赤ちゃんが眠るには安心させてあげることが一番大切です。</p></div>
+      <div class="guide-section"><h3>生後1か月頃</h3><p>この頃から夜行性が終わり、夜の方が寝てくれるようになり少し楽に感じる時期です。その反面、昼は授乳の後でも起きており、かまってほしいといった要求が強くなります。</p><p class="note">お腹が空いた時、眠い時、甘えている時など、泣き方に変化が出てくるので要求がわかりやすくなります。お腹がいっぱいで抱っこされている幸せなタイミングで「にこっ」と笑う表情もたくさん見られるようになります。</p></div>
+      <div class="guide-section"><h3>泣き止まない時</h3><p>「寝てくれない」と思い、ミルクをどんどん飲ませると、苦しくて泣いたり、吐いたりと逆効果になることもあります。自分に余裕がない時に泣き続けられると、イライラしてしまって当然です。</p><p class="note">！ そんな時は「揺さぶられっ子症候群」を思い出してください。激しく揺さぶることは絶対にやめましょう。抱き癖がつくと言われることもありますが、放っておくよりも抱っこで安心させてあげましょう。</p></div>
+      <div class="guide-section"><h3>安心して眠れる方法を探そう</h3><p>赤ちゃんにとって安心できる方法はさまざまです。添い寝でトントン♪（お母さんの匂いが大好き）、ミルクのあと抱っこでゆらゆら♪、おひな巻き（お腹の中にいた時と同じ手足を曲げ丸く包んであげる）など、おっぱいに代わる技を見つけましょう。</p></div>
+    </div>
   </div>
 
-  <div class="guide-section"><h3>授乳の帰宅準備</h3><p>退院直前に授乳をしますが、帰ってすぐ次の授乳時間になります。退院時に母乳だけで育児できる人は少ないです。ミルク、哺乳瓶や搾乳器の消毒を事前に済ませておきましょう。</p><p class="note">病院が使用しているミルクメーカーは決まっていません。ミルク缶は開封から1か月の使用期限です。まずは小さいミルク缶を準備しておきましょう。</p></div>
-
-  <div class="guide-section"><h3>授乳時間と回数</h3><p>退院後は、赤ちゃんが泣いたら授乳をする「自律授乳」で育てていきましょう。赤ちゃんは胃が小さく、一度にたくさんの量を飲めません。お腹が空いているのに眠り続けることもあります。</p><p class="note">！ 1か月健診までは<strong style="color:var(--rose)">3時間空いたら起こして</strong>授乳をしましょう。母乳は欲しがるサインがあれば何回でもOK。ミルクは母乳よりカロリーが高く消化吸収が悪いため、3時間は空けるようにしましょう。</p></div>
-
-  <div class="guide-section"><h3>飲ませる量</h3><p>退院時に、どれぐらい母乳が出ているか、赤ちゃんの大きさ、生まれてからの日数などから、産後健診1までの授乳方法を個別で説明されます。</p><p class="note">新生児は満腹を感じる機能が発達しておらず、与えれば与えるだけミルクを飲むため注意しましょう。薄めたり目分量で作らないように。満1か月以降のミルクだけの目安量が缶に明記されています。</p></div>
-
-  <!-- 1か月健診が近づいてきたら -->
-  <div style="margin-top:32px;padding-top:20px;border-top:2px solid rgba(200,164,110,.15)">
-    <div style="font-size:.95rem;font-weight:700;color:var(--deep);margin-bottom:16px;text-align:center">1か月健診が近づいてきたら</div>
+  <!-- カテゴリ5: 事故予防 -->
+  <div class="guide-cat" onclick="this.classList.toggle('open')">
+    <div class="guide-cat-title">&#x26A0;&#xFE0F; 事故予防</div>
+    <div class="guide-cat-body">
+      <div class="guide-section"><h3>転落</h3><p>新生児は寝返りができませんが、足で蹴る力が十分にあり、自力で180度回転します。ベッドの柵は必ず上げ、ベビーバスチェアなどではベルトを装着しましょう。</p><p class="note">！ 一瞬でもソファやベッドの端に寝かせてはいけません。一番重たい頭から転落します。</p></div>
+      <div class="guide-section"><h3>窒息</h3><p>偶然手に届いたもので顔を覆うことがあります。寝返りができるようになるまでは、赤ちゃんの周りにおもちゃやタオルは置かないようにしましょう。布団は硬いものを使用し、ベッドと壁の隙間に注意。</p><p class="note">！ 掛布団の上やクッションに寝かすことは止めましょう。</p></div>
+      <div class="guide-section"><h3>SIDS（乳幼児突然死症候群）</h3><p>赤ちゃんが眠っている間に突然死亡してしまうことをいい、日本では年間150件くらい発生しています。要因として、うつぶせ寝や喫煙が考えられています。</p><p class="note">1歳になるまでうつぶせ寝はやめ、仰向けで寝かせましょう。赤ちゃんがいる部屋での喫煙や、喫煙後すぐに近づくことは避けましょう。</p></div>
+      <div class="guide-alert" style="margin-top:8px"><h3>退院直後の事故に注意</h3><ul><li>育児に慣れていない時期こそ予測がつかず事故につながる</li><li>事故は一瞬の隙、油断で起こる</li><li>家族みんなで気をつけましょう</li></ul></div>
+    </div>
   </div>
 
-  <div class="guide-section"><h3>外気浴</h3><p>生後3週間頃になったら、お顔に直接日光が当たらないよう、気候の良い時間にベランダや庭に出て、外の空気や音に触れさせてみましょう。</p></div>
+  <!-- カテゴリ6: 退院・おうちの準備 -->
+  <div class="guide-cat" onclick="this.classList.toggle('open')">
+    <div class="guide-cat-title">&#x1F3E0; 退院・おうちの準備</div>
+    <div class="guide-cat-body">
+      <div class="guide-section"><h3>退院の交通手段</h3><p>新生児は免疫が少ないため、公共交通機関はおすすめできません。食事や買い物などの寄り道はせず、直接ご自宅やご実家へ帰りましょう。</p><p class="note">自家用車の場合、チャイルドシートの準備を。初めて使用する場合は事前に設置・練習しておきましょう。</p></div>
+      <div class="guide-section"><h3>お部屋の準備</h3><p>赤ちゃんをどこに寝かせるか決めましょう。物が落ちてこないか、すきま風や直射日光・冷暖房の風が直接当たらないか確認。間取りによって昼と夜で過ごす場所を変えてもOKですが、常に目が届く場所にしましょう。</p><p class="note">実家に帰る方は、自宅のお部屋も同時に考えておくと安心です。</p></div>
+    </div>
+  </div>
 
-  <div class="guide-section"><h3>外出準備</h3><p>生活に余裕が出たら、抱っこ紐やベビーカーの準備をし、家の中で試してみましょう。</p></div>
+  <!-- カテゴリ7: 1か月健診に向けて -->
+  <div class="guide-cat" onclick="this.classList.toggle('open')">
+    <div class="guide-cat-title">&#x1F4C5; 1か月健診に向けて</div>
+    <div class="guide-cat-body">
+      <div class="guide-section"><h3>外気浴</h3><p>生後3週間頃になったら、お顔に直接日光が当たらないよう、気候の良い時間にベランダや庭に出て、外の空気や音に触れさせてみましょう。</p></div>
+      <div class="guide-section"><h3>外出準備</h3><p>生活に余裕が出たら、抱っこ紐やベビーカーの準備をし、家の中で試してみましょう。</p></div>
+    </div>
+  </div>
 
+  <!-- 病院相談 (常に表示) -->
+  <div class="guide-alert" style="margin-top:20px"><h3>こんなときは病院に相談</h3><ul><li>便の色が便色カード1〜3番</li><li>授乳のたびに噴水状に吐く</li><li>黄疸が強く感じる</li><li>おへその赤み・臭いが強い</li><li>38℃以上の発熱が続く</li><li>ぐったり・飲みが悪い</li></ul></div>
+
+  <div style="text-align:center;margin-top:20px;font-size:.65rem;color:var(--text-light)">出典：大阪市立総合医療センター すみれ9病棟</div>
 </div>
 
 <script>
