@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新生児ケアガイド</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --pink-soft: #fce4ec;
+    --pink-mid: #f8bbd0;
+    --pink-accent: #e91e63;
+    --peach: #fff3e0;
+    --yellow-soft: #fff9c4;
+    --green-soft: #e8f5e9;
+    --blue-soft: #e3f2fd;
+    --purple-soft: #f3e5f5;
+    --orange-soft: #fff3e0;
+    --bg: #fefaf6;
+    --text: #4a3728;
+    --text-light: #7b6b5d;
+    --card-radius: 20px;
+  }
+
+  body {
+    font-family: 'Noto Sans JP', 'Zen Maru Gothic', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  .board {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 30px 20px 50px;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    text-align: center;
+    padding: 40px 20px 30px;
+    position: relative;
+    margin-bottom: 10px;
+  }
+
+  .header::before {
+    content: '🌸';
+    font-size: 28px;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-8px); }
+  }
+
+  .header h1 {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-weight: 900;
+    font-size: 2.2rem;
+    color: var(--pink-accent);
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+
+  .header .subtitle {
+    font-size: 0.95rem;
+    color: var(--text-light);
+    font-weight: 400;
+  }
+
+  .header .hospital-badge {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 4px 16px;
+    background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+    border-radius: 20px;
+    font-size: 0.75rem;
+    color: var(--text-light);
+    font-weight: 500;
+  }
+
+  /* ===== GRID ===== */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  @media (max-width: 800px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 520px) {
+    .grid { grid-template-columns: 1fr; }
+    .header h1 { font-size: 1.6rem; }
+  }
+
+  /* ===== CARD ===== */
+  .card {
+    border-radius: var(--card-radius);
+    padding: 22px 20px 20px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  }
+
+  .card .icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .card h2 {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card p, .card li {
+    font-size: 0.82rem;
+    line-height: 1.75;
+    color: var(--text);
+  }
+
+  .card ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .card ul li {
+    padding-left: 18px;
+    position: relative;
+    margin-bottom: 4px;
+  }
+
+  .card ul li::before {
+    content: '◦';
+    position: absolute;
+    left: 2px;
+    color: var(--text-light);
+    font-weight: 700;
+  }
+
+  .card .note {
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    line-height: 1.6;
+  }
+
+  .card .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  /* ===== CARD THEMES ===== */
+  .card-pee {
+    background: linear-gradient(160deg, #fff9c4 0%, #fff3e0 100%);
+    border: 1.5px solid #ffe082;
+  }
+  .card-pee h2 { color: #e65100; }
+  .card-pee .note { background: rgba(255,255,255,0.6); }
+  .card-pee .tag { background: #ffe082; color: #e65100; }
+
+  .card-poop {
+    background: linear-gradient(160deg, #fff3e0 0%, #fce4ec 100%);
+    border: 1.5px solid #ffcc80;
+  }
+  .card-poop h2 { color: #bf360c; }
+  .card-poop .note { background: rgba(255,255,255,0.6); }
+  .card-poop .tag { background: #ffcc80; color: #bf360c; }
+
+  .card-spit {
+    background: linear-gradient(160deg, #e3f2fd 0%, #e8eaf6 100%);
+    border: 1.5px solid #90caf9;
+  }
+  .card-spit h2 { color: #1565c0; }
+  .card-spit .note { background: rgba(255,255,255,0.6); }
+  .card-spit .tag { background: #90caf9; color: #0d47a1; }
+
+  .card-jaundice {
+    background: linear-gradient(160deg, #fff9c4 0%, #fff8e1 100%);
+    border: 1.5px solid #ffd54f;
+  }
+  .card-jaundice h2 { color: #f57f17; }
+  .card-jaundice .note { background: rgba(255,255,255,0.6); }
+  .card-jaundice .tag { background: #ffd54f; color: #e65100; }
+
+  .card-temp {
+    background: linear-gradient(160deg, #fce4ec 0%, #f8bbd0 40%, #fce4ec 100%);
+    border: 1.5px solid #f48fb1;
+  }
+  .card-temp h2 { color: #c2185b; }
+  .card-temp .note { background: rgba(255,255,255,0.6); }
+  .card-temp .tag { background: #f48fb1; color: #fff; }
+
+  .card-nose {
+    background: linear-gradient(160deg, #e8f5e9 0%, #f1f8e9 100%);
+    border: 1.5px solid #a5d6a7;
+  }
+  .card-nose h2 { color: #2e7d32; }
+  .card-nose .note { background: rgba(255,255,255,0.6); }
+  .card-nose .tag { background: #a5d6a7; color: #1b5e20; }
+
+  .card-skin {
+    background: linear-gradient(160deg, #f3e5f5 0%, #fce4ec 100%);
+    border: 1.5px solid #ce93d8;
+  }
+  .card-skin h2 { color: #7b1fa2; }
+  .card-skin .note { background: rgba(255,255,255,0.6); }
+  .card-skin .tag { background: #ce93d8; color: #fff; }
+
+  .card-immune {
+    background: linear-gradient(160deg, #e3f2fd 0%, #e8f5e9 100%);
+    border: 1.5px solid #81d4fa;
+  }
+  .card-immune h2 { color: #0277bd; }
+  .card-immune .tag { background: #81d4fa; color: #01579b; }
+
+  /* ===== ALERT CARD ===== */
+  .card-alert {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, #fff5f5 0%, #fce4ec 50%, #fff5f5 100%);
+    border: 2px solid var(--pink-accent);
+    padding: 24px 28px;
+  }
+
+  .card-alert h2 {
+    color: var(--pink-accent);
+    font-size: 1.2rem;
+    margin-bottom: 14px;
+  }
+
+  .alert-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+  }
+
+  .alert-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: white;
+    border-radius: 30px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    border: 1px solid #f8bbd0;
+    color: #c62828;
+  }
+
+  .alert-item .dot {
+    width: 6px;
+    height: 6px;
+    background: var(--pink-accent);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ===== FOOTER ===== */
+  .footer-msg {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 20px;
+    font-size: 0.88rem;
+    color: var(--text-light);
+    line-height: 1.8;
+    font-family: 'Zen Maru Gothic', sans-serif;
+  }
+
+  .footer-msg strong {
+    color: var(--pink-accent);
+    font-weight: 700;
+  }
+
+  /* ===== TIMELINE MINI ===== */
+  .timeline {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 10px 0 6px;
+    font-size: 0.72rem;
+    color: var(--text-light);
+  }
+
+  .timeline .step {
+    padding: 3px 8px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 8px;
+    text-align: center;
+    flex: 1;
+  }
+
+  .timeline .arrow {
+    font-size: 0.9rem;
+    color: #ccc;
+  }
+
+  /* ===== DECORATIVE PETALS ===== */
+  .petal {
+    position: fixed;
+    pointer-events: none;
+    opacity: 0.15;
+    font-size: 24px;
+    animation: petal-fall linear infinite;
+    z-index: -1;
+  }
+
+  @keyframes petal-fall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 0.15; }
+    100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="board">
+  <!-- HEADER -->
+  <div class="header">
+    <h1>新生児ケアガイド</h1>
+    <p class="subtitle">退院後〜1か月健診までに知っておきたいこと</p>
+    <span class="hospital-badge">大阪市立総合医療センター</span>
+  </div>
+
+  <!-- GRID -->
+  <div class="grid">
+
+    <!-- おしっこ -->
+    <div class="card card-pee">
+      <span class="icon">💧</span>
+      <h2>おしっこ</h2>
+      <span class="tag">1日6〜8回が目安</span>
+      <p>十分にミルクや母乳を飲んでいれば、薄い色のおしっこが1日6〜8回出ます。</p>
+      <div class="note">
+        🟠 オレンジ色の尿が出ることがありますが、腎臓がまだ未熟なためで、出血ではありません。自然になくなります。
+      </div>
+    </div>
+
+    <!-- うんち -->
+    <div class="card card-poop">
+      <span class="icon">💩</span>
+      <h2>うんち</h2>
+      <span class="tag">日々変化します</span>
+      <div class="timeline">
+        <div class="step"><strong>〜1日</strong><br>黒緑色<br>(胎便)</div>
+        <span class="arrow">→</span>
+        <div class="step"><strong>2〜3日</strong><br>黄色混じり</div>
+        <span class="arrow">→</span>
+        <div class="step"><strong>4〜5日</strong><br>黄色い<br>泥状</div>
+      </div>
+      <p>母乳中心だと水っぽく粒々混じり。ミルク中心だとやや硬めで1日1〜2回。</p>
+      <div class="note">
+        ⚠️ 1日出ない・お腹が張る・機嫌が悪い → <strong>綿棒で肛門を刺激</strong>してあげましょう。色が気になるときは母子手帳の便色カードと比べて。
+      </div>
+    </div>
+
+    <!-- 嘔吐（溢乳） -->
+    <div class="card card-spit">
+      <span class="icon">🍼</span>
+      <h2>嘔吐（溢乳）</h2>
+      <span class="tag">よくあること</span>
+      <p>げっぷと一緒に少量吐いたり、口の端からミルクがタラタラ流れるのは<strong>溢乳（いつにゅう）</strong>といいます。</p>
+      <p>赤ちゃんの胃は大人と形が違い、吐きやすい構造なので心配いりません。</p>
+      <div class="note">
+        🚨 授乳のたびに<strong>噴水のように吐く</strong>場合は受診が必要です。
+      </div>
+    </div>
+
+    <!-- 黄疸 -->
+    <div class="card card-jaundice">
+      <span class="icon">✨</span>
+      <h2>黄疸（おうだん）</h2>
+      <span class="tag">90%以上に出現</span>
+      <p>肌や白目が黄色っぽくなる<strong>生理的黄疸</strong>は、肝臓が未熟でビリルビンを排出しにくいために起こります。</p>
+      <p>生後1〜3日で現れ、4〜5日でピーク、1〜2週間で落ち着きます。</p>
+      <div class="note">
+        🤱 母乳栄養の子は1か月以上続くこともありますが、元気で飲みがよければ安心して母乳を続けてOK。
+      </div>
+    </div>
+
+    <!-- 体温 -->
+    <div class="card card-temp">
+      <span class="icon">🌡️</span>
+      <h2>体温</h2>
+      <span class="tag">平熱は37.0℃前後</span>
+      <p>体温調節の機能が未熟なので、些細なことで体温が上がりやすいです。</p>
+      <div class="note">
+        📋 高い時は室温や服の枚数を調整し、しばらくしてから<strong>脇で再測定</strong>を。耳の体温計は誤差が大きいので注意。
+      </div>
+    </div>
+
+    <!-- 鼻・くしゃみ・しゃっくり -->
+    <div class="card card-nose">
+      <span class="icon">🤧</span>
+      <h2>鼻・くしゃみ・しゃっくり</h2>
+      <span class="tag">心配なし</span>
+      <p>フガフガ・グーグーと鼻が詰まっているような音は、鼻の穴が狭いだけ。鼻詰まりではありません。</p>
+      <p>粘膜が敏感でくしゃみが多く、横隔膜が未熟なためしゃっくりも頻繁に起きます。</p>
+    </div>
+
+    <!-- スキンケア -->
+    <div class="card card-skin">
+      <span class="icon">👶</span>
+      <h2>スキンケア</h2>
+      <span class="tag">お肌トラブル対策</span>
+      <p><strong>おむつかぶれ</strong>：こまめに替え、皮膚をこすらず優しく拭く。ひどい時はお湯で洗い流すのが効果的。</p>
+      <p><strong>首・耳の後ろ・脇</strong>：肉付きがよくなると密着部分が赤くただれやすい。しっかり洗いましょう。</p>
+    </div>
+
+    <!-- 免疫 -->
+    <div class="card card-immune">
+      <span class="icon">🛡️</span>
+      <h2>赤ちゃんの免疫</h2>
+      <span class="tag">お母さんからの贈り物</span>
+      <p>お腹の中でもらった免疫と、母乳に含まれる免疫で守られています。生後半年頃までは病気にかかりにくいと言われています。</p>
+    </div>
+
+    <!-- 受診が必要な症状（アラートカード） -->
+    <div class="card card-alert">
+      <h2>🏥 こんなときは病院に相談！</h2>
+      <div class="alert-items">
+        <span class="alert-item"><span class="dot"></span>便の色が便色カード1〜3番</span>
+        <span class="alert-item"><span class="dot"></span>授乳のたびに噴水状に吐く</span>
+        <span class="alert-item"><span class="dot"></span>黄疸が強く感じる</span>
+        <span class="alert-item"><span class="dot"></span>おへその赤み・臭いが強い</span>
+        <span class="alert-item"><span class="dot"></span>38℃以上の発熱が続く</span>
+        <span class="alert-item"><span class="dot"></span>ぐったり・飲みが悪い</span>
+      </div>
+    </div>
+
+    <!-- フッターメッセージ -->
+    <div class="footer-msg">
+      退院後から生後1か月、赤ちゃんの体は多くの変化とともに成長していきます。<br>
+      不安なことがあれば、ネットの情報に頼りすぎず<strong>まずは病院にご連絡ください</strong>。
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Subtle falling petal decoration
+  function createPetal() {
+    const petal = document.createElement('div');
+    petal.className = 'petal';
+    petal.textContent = ['🌸', '🩷', '✿'][Math.floor(Math.random() * 3)];
+    petal.style.left = Math.random() * 100 + 'vw';
+    petal.style.animationDuration = (8 + Math.random() * 12) + 's';
+    petal.style.fontSize = (16 + Math.random() * 14) + 'px';
+    document.body.appendChild(petal);
+    setTimeout(() => petal.remove(), 20000);
+  }
+  setInterval(createPetal, 3000);
+  for (let i = 0; i < 3; i++) setTimeout(createPetal, i * 800);
+</script>
+
+</body>
+</html>
