@@ -9,288 +9,92 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --warm: #fdf6ee;
-    --cream: #faf3e8;
-    --peach: #f5d6c3;
-    --blush: #e8a0b4;
-    --rose: #d4708a;
-    --deep: #6b3a4a;
-    --text: #4a3030;
-    --text-light: #9a7a7a;
-    --gold: #c8a46e;
-    --gold-light: #e8d5b0;
-    --tab-bg: #fff9f3;
-    --shadow: 0 2px 20px rgba(107,58,74,0.08);
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: 'Zen Maru Gothic', sans-serif;
-    background: var(--warm);
-    color: var(--text);
-    min-height: 100dvh;
-    overflow-x: hidden;
-  }
-
-  /* ===== HERO SECTION ===== */
-  .hero {
-    position: relative;
-    width: 100%;
-    height: 55dvh;
-    min-height: 320px;
-    overflow: hidden;
-  }
-
-  .hero img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center 30%;
-    display: block;
-  }
-
-  .hero-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 60%;
-    background: linear-gradient(to top, var(--warm) 0%, rgba(253,246,238,0.7) 40%, transparent 100%);
-    pointer-events: none;
-  }
-
-  .hero-text {
-    position: absolute;
-    bottom: 24px;
-    left: 0;
-    right: 0;
-    text-align: center;
-    z-index: 2;
-  }
-
-  .hero-name {
-    font-family: 'Caveat', cursive;
-    font-size: 3.2rem;
-    font-weight: 600;
-    color: var(--deep);
-    letter-spacing: 0.05em;
-    line-height: 1;
-    margin-bottom: 2px;
-  }
-
-  .hero-name-jp {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: var(--rose);
-    letter-spacing: 0.3em;
-    margin-bottom: 6px;
-  }
-
-  .hero-birthday {
-    font-size: 0.75rem;
-    color: var(--text-light);
-    letter-spacing: 0.1em;
-  }
-
-  .hero-birth-stats {
-    font-size: 0.7rem;
-    color: var(--text-light);
-    letter-spacing: 0.05em;
-    margin-top: 2px;
-  }
-
-  .hero-days {
-    display: inline-block;
-    margin-top: 8px;
-    padding: 4px 16px;
-    background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 20px;
-    font-size: 0.8rem;
-    color: var(--rose);
-    font-weight: 500;
-    border: 1px solid rgba(212,112,138,0.15);
-  }
-
-  /* ===== TAB NAVIGATION ===== */
-  .tab-bar {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: var(--tab-bg);
-    border-bottom: 1px solid rgba(200,164,110,0.15);
-    display: flex;
-    justify-content: center;
-    gap: 0;
-    padding: 0;
-    box-shadow: 0 1px 8px rgba(107,58,74,0.05);
-  }
-
-  .tab-btn {
-    flex: 1;
-    max-width: 120px;
-    padding: 12px 8px 10px;
-    border: none;
-    background: none;
-    font-family: 'Zen Maru Gothic', sans-serif;
-    font-size: 0.72rem;
-    font-weight: 500;
-    color: var(--text-light);
-    cursor: pointer;
-    position: relative;
-    transition: color 0.25s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-  }
-
-  .tab-btn .tab-icon {
-    font-size: 1.2rem;
-    line-height: 1;
-  }
-
-  .tab-btn.active {
-    color: var(--rose);
-  }
-
-  .tab-btn.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 20%;
-    right: 20%;
-    height: 2.5px;
-    background: var(--rose);
-    border-radius: 2px 2px 0 0;
-  }
-
-  .tab-btn:active {
-    opacity: 0.7;
-  }
-
-  /* ===== TAB CONTENT ===== */
-  .tab-content {
-    display: none;
-    padding: 20px 16px 100px;
-    animation: fadeIn 0.3s ease;
-  }
-
-  .tab-content.active {
-    display: block;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ===== PLACEHOLDER CONTENT ===== */
-  .placeholder {
-    text-align: center;
-    padding: 60px 20px;
-  }
-
-  .placeholder-icon {
-    font-size: 2.5rem;
-    margin-bottom: 12px;
-    opacity: 0.4;
-  }
-
-  .placeholder h3 {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--deep);
-    margin-bottom: 8px;
-  }
-
-  .placeholder p {
-    font-size: 0.82rem;
-    color: var(--text-light);
-    line-height: 1.7;
-  }
-
-  /* ===== CARE GUIDE (existing content) ===== */
-  .guide-section {
-    margin-bottom: 20px;
-  }
-
-  .guide-section h3 {
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: var(--deep);
-    margin-bottom: 6px;
-    padding-left: 12px;
-    border-left: 3px solid var(--blush);
-  }
-
-  .guide-section p {
-    font-size: 0.8rem;
-    color: var(--text);
-    line-height: 1.8;
-    margin-bottom: 4px;
-  }
-
-  .guide-section .note {
-    font-size: 0.75rem;
-    color: var(--rose);
-    margin-top: 4px;
-  }
-
-  .guide-alert {
-    margin-top: 24px;
-    padding: 16px;
-    background: #fff5f5;
-    border: 1.5px solid var(--rose);
-    border-radius: 12px;
-  }
-
-  .guide-alert h3 {
-    color: var(--rose);
-    border-left-color: var(--rose);
-    margin-bottom: 10px;
-  }
-
-  .guide-alert ul {
-    list-style: none;
-    padding: 0;
-  }
-
-  .guide-alert li {
-    font-size: 0.78rem;
-    color: #c62828;
-    padding: 3px 0 3px 14px;
-    position: relative;
-  }
-
-  .guide-alert li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    width: 5px;
-    height: 5px;
-    background: var(--rose);
-    border-radius: 50%;
-    transform: translateY(-50%);
-  }
-
-  /* ===== RESPONSIVE ===== */
-  @media (min-width: 600px) {
-    .hero { height: 50dvh; }
-    .hero-name { font-size: 4rem; }
-    .tab-btn { font-size: 0.8rem; padding: 14px 12px 12px; }
-    .tab-content { padding: 28px 24px 100px; max-width: 640px; margin: 0 auto; }
-  }
+:root{--warm:#fdf6ee;--cream:#faf3e8;--peach:#f5d6c3;--blush:#e8a0b4;--rose:#d4708a;--deep:#6b3a4a;--text:#4a3030;--text-light:#9a7a7a;--gold:#c8a46e;--gold-light:#e8d5b0;--tab-bg:#fff9f3}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Zen Maru Gothic',sans-serif;background:var(--warm);color:var(--text);min-height:100dvh;overflow-x:hidden}
+.hero{position:relative;width:100%;height:55dvh;min-height:320px;overflow:hidden}
+.hero img{width:100%;height:100%;object-fit:cover;object-position:center 30%;display:block}
+.hero-overlay{position:absolute;bottom:0;left:0;right:0;height:60%;background:linear-gradient(to top,var(--warm) 0%,rgba(253,246,238,.7) 40%,transparent 100%);pointer-events:none}
+.hero-text{position:absolute;bottom:24px;left:0;right:0;text-align:center;z-index:2}
+.hero-name{font-family:'Caveat',cursive;font-size:3.2rem;font-weight:600;color:var(--deep);letter-spacing:.05em;line-height:1;margin-bottom:2px}
+.hero-name-jp{font-size:1.1rem;font-weight:500;color:var(--rose);letter-spacing:.3em;margin-bottom:6px}
+.hero-birthday{font-size:.75rem;color:var(--text-light);letter-spacing:.1em}
+.hero-birth-stats{font-size:.7rem;color:var(--text-light);letter-spacing:.05em;margin-top:2px}
+.hero-days{display:inline-block;margin-top:8px;padding:4px 16px;background:rgba(255,255,255,.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:20px;font-size:.8rem;color:var(--rose);font-weight:500;border:1px solid rgba(212,112,138,.15)}
+.tab-bar{position:sticky;top:0;z-index:100;background:var(--tab-bg);border-bottom:1px solid rgba(200,164,110,.15);display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:0 4px;box-shadow:0 1px 8px rgba(107,58,74,.05)}
+.tab-bar::-webkit-scrollbar{display:none}
+.tab-btn{flex:0 0 auto;padding:11px 14px 9px;border:none;background:none;font-family:'Zen Maru Gothic',sans-serif;font-size:.72rem;font-weight:500;color:var(--text-light);cursor:pointer;position:relative;transition:color .25s ease;display:flex;flex-direction:column;align-items:center;gap:2px;white-space:nowrap}
+.tab-btn .tab-icon{font-size:1.1rem;line-height:1}
+.tab-btn.active{color:var(--rose)}
+.tab-btn.active::after{content:'';position:absolute;bottom:0;left:16%;right:16%;height:2.5px;background:var(--rose);border-radius:2px 2px 0 0}
+.tab-btn:active{opacity:.7}
+.tab-content{display:none;padding:16px 16px 100px;animation:fadeIn .3s ease}
+.tab-content.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.section-title{font-size:.85rem;font-weight:700;color:var(--deep);margin-bottom:12px}
+.today-summary{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.summary-chip{flex:1;min-width:65px;text-align:center;padding:10px 4px;background:#fff;border-radius:12px;border:1px solid rgba(200,164,110,.15)}
+.summary-chip .num{font-size:1.2rem;font-weight:700;color:var(--deep);line-height:1.2}
+.summary-chip .label{font-size:.6rem;color:var(--text-light);margin-top:2px}
+.record-form{background:#fff;border-radius:16px;padding:16px;margin-bottom:16px;border:1px solid rgba(200,164,110,.12)}
+.form-row{margin-bottom:12px}
+.form-label{font-size:.72rem;color:var(--text-light);margin-bottom:6px;display:block}
+.type-btns{display:flex;gap:6px;flex-wrap:wrap}
+.type-btn{padding:8px 14px;border-radius:20px;border:1.5px solid var(--gold-light);background:#fff;font-family:'Zen Maru Gothic',sans-serif;font-size:.78rem;color:var(--text);cursor:pointer;transition:all .2s}
+.type-btn.active{background:var(--rose);color:#fff;border-color:var(--rose)}
+.type-btn:active{transform:scale(.96)}
+.side-btns{display:flex;gap:6px}
+.side-btn{flex:1;padding:8px;border-radius:12px;border:1.5px solid var(--gold-light);background:#fff;font-family:'Zen Maru Gothic',sans-serif;font-size:.78rem;color:var(--text);cursor:pointer;text-align:center;transition:all .2s}
+.side-btn.active{background:var(--blush);color:#fff;border-color:var(--blush)}
+.num-input-row{display:flex;align-items:center;gap:8px}
+.num-input{width:80px;padding:8px 10px;border-radius:10px;border:1.5px solid var(--gold-light);font-family:'Zen Maru Gothic',sans-serif;font-size:1rem;text-align:center;color:var(--text);background:#fff}
+.num-input:focus{outline:none;border-color:var(--rose)}
+.num-unit{font-size:.78rem;color:var(--text-light)}
+.time-input{padding:8px 12px;border-radius:10px;border:1.5px solid var(--gold-light);font-family:'Zen Maru Gothic',sans-serif;font-size:.9rem;color:var(--text);background:#fff}
+.time-input:focus{outline:none;border-color:var(--rose)}
+.memo-input{width:100%;padding:8px 10px;border-radius:10px;border:1.5px solid var(--gold-light);font-family:'Zen Maru Gothic',sans-serif;font-size:.8rem;color:var(--text);background:#fff;resize:none;height:36px}
+.memo-input:focus{outline:none;border-color:var(--rose)}
+.submit-btn{width:100%;padding:12px;border:none;border-radius:12px;background:var(--rose);color:#fff;font-family:'Zen Maru Gothic',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;margin-top:4px}
+.submit-btn:active{transform:scale(.98);opacity:.9}
+.submit-btn:disabled{background:var(--gold-light);color:var(--text-light)}
+.cond-field{display:none}.cond-field.show{display:block}
+.log-list{margin-top:8px}
+.log-date-header{font-size:.72rem;color:var(--text-light);margin:16px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(200,164,110,.12)}
+.log-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(200,164,110,.06)}
+.log-time{font-size:.78rem;font-weight:500;color:var(--deep);white-space:nowrap;min-width:42px;padding-top:1px}
+.log-badge{display:inline-block;padding:2px 8px;border-radius:8px;font-size:.65rem;font-weight:500;color:#fff;white-space:nowrap}
+.log-badge.breast{background:var(--blush)}.log-badge.formula{background:var(--gold)}.log-badge.mixed{background:#b39ddb}
+.log-badge.pee{background:#ffca28;color:var(--text)}.log-badge.poop{background:#ff8a65}.log-badge.both{background:#a1887f}
+.log-badge.temp-normal{background:#66bb6a}.log-badge.temp-high{background:#ef5350}.log-badge.temp-low{background:#42a5f5}
+.log-badge.sleep-start{background:#7986cb}.log-badge.sleep-end{background:#ffb74d}
+.log-detail{font-size:.75rem;color:var(--text);line-height:1.5}
+.log-memo{font-size:.68rem;color:var(--text-light);margin-top:2px}
+.log-body{flex:1}
+.log-delete{padding:4px 8px;border:none;background:none;color:var(--text-light);font-size:.7rem;cursor:pointer;opacity:.5}
+.log-delete:active{opacity:1;color:#e53935}
+.placeholder{text-align:center;padding:60px 20px}
+.placeholder-icon{font-size:2.5rem;margin-bottom:12px;opacity:.4}
+.placeholder h3{font-size:1rem;font-weight:700;color:var(--deep);margin-bottom:8px}
+.placeholder p{font-size:.82rem;color:var(--text-light);line-height:1.7}
+.guide-section{margin-bottom:20px}
+.guide-section h3{font-size:.9rem;font-weight:700;color:var(--deep);margin-bottom:6px;padding-left:12px;border-left:3px solid var(--blush)}
+.guide-section p{font-size:.8rem;color:var(--text);line-height:1.8;margin-bottom:4px}
+.guide-section .note{font-size:.75rem;color:var(--rose);margin-top:4px}
+.guide-alert{margin-top:24px;padding:16px;background:#fff5f5;border:1.5px solid var(--rose);border-radius:12px}
+.guide-alert h3{color:var(--rose);border-left-color:var(--rose);margin-bottom:10px}
+.guide-alert ul{list-style:none;padding:0}
+.guide-alert li{font-size:.78rem;color:#c62828;padding:3px 0 3px 14px;position:relative}
+.guide-alert li::before{content:'';position:absolute;left:0;top:50%;width:5px;height:5px;background:var(--rose);border-radius:50%;transform:translateY(-50%)}
+/* Sleep bar */
+.sleep-bar{height:18px;border-radius:9px;background:#e8eaf6;position:relative;margin:6px 0;overflow:hidden}
+.sleep-bar .filled{height:100%;border-radius:9px;background:linear-gradient(90deg,#7986cb,#9fa8da)}
+.sleep-hours-row{display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-light)}
+@media(min-width:600px){.hero{height:50dvh}.hero-name{font-size:4rem}.tab-btn{font-size:.8rem;padding:14px 14px 12px}.tab-content{padding:20px 24px 100px;max-width:640px;margin:0 auto}}
 </style>
 </head>
 <body>
 
-<!-- HERO -->
-<div class="hero">
+<div class="hero" id="heroSection">
   <img src="hero.jpg" alt="深音">
   <div class="hero-overlay"></div>
   <div class="hero-text">
@@ -302,163 +106,362 @@
   </div>
 </div>
 
-<!-- TAB BAR -->
 <div class="tab-bar">
-  <button class="tab-btn active" data-tab="home">
-    <span class="tab-icon">&#9679;</span>
-    ホーム
-  </button>
-  <button class="tab-btn" data-tab="milk">
-    <span class="tab-icon">&#9697;</span>
-    授乳
-  </button>
-  <button class="tab-btn" data-tab="diaper">
-    <span class="tab-icon">&#9675;</span>
-    おむつ
-  </button>
-  <button class="tab-btn" data-tab="growth">
-    <span class="tab-icon">&#9651;</span>
-    成長
-  </button>
-  <button class="tab-btn" data-tab="guide">
-    <span class="tab-icon">&#9734;</span>
-    ガイド
-  </button>
+  <button class="tab-btn active" data-tab="home"><span class="tab-icon">&#9679;</span>ホーム</button>
+  <button class="tab-btn" data-tab="milk"><span class="tab-icon">&#9697;</span>授乳</button>
+  <button class="tab-btn" data-tab="diaper"><span class="tab-icon">&#9675;</span>おむつ</button>
+  <button class="tab-btn" data-tab="temp"><span class="tab-icon">&#9832;</span>体温</button>
+  <button class="tab-btn" data-tab="sleep"><span class="tab-icon">&#9790;</span>睡眠</button>
+  <button class="tab-btn" data-tab="growth"><span class="tab-icon">&#9651;</span>成長</button>
+  <button class="tab-btn" data-tab="guide"><span class="tab-icon">&#9734;</span>ガイド</button>
 </div>
-
-<!-- TAB CONTENTS -->
 
 <!-- HOME -->
 <div class="tab-content active" id="tab-home">
   <div class="placeholder">
     <div class="placeholder-icon">&#10047;</div>
     <h3>深音のページへようこそ</h3>
-    <p>授乳やおむつの記録、<br>体重・身長の成長記録、<br>写真アルバムを<br>ここにまとめていきます。</p>
+    <p>授乳やおむつの記録、<br>体重・身長の成長記録を<br>ここにまとめていきます。</p>
   </div>
 </div>
 
 <!-- MILK -->
 <div class="tab-content" id="tab-milk">
-  <div class="placeholder">
-    <div class="placeholder-icon">&#9697;</div>
-    <h3>授乳・ミルク記録</h3>
-    <p>授乳の時間や量を<br>記録できるようになります。<br><br><span style="color:var(--gold);">coming soon</span></p>
+  <div class="section-title">今日の授乳</div>
+  <div class="today-summary">
+    <div class="summary-chip"><div class="num" id="milkCountToday">0</div><div class="label">回</div></div>
+    <div class="summary-chip"><div class="num" id="milkBreastMin">0</div><div class="label">母乳(分)</div></div>
+    <div class="summary-chip"><div class="num" id="milkFormulaMl">0</div><div class="label">ミルク(ml)</div></div>
+    <div class="summary-chip"><div class="num" id="milkLastTime">--:--</div><div class="label">最後</div></div>
   </div>
+  <div class="record-form">
+    <div class="form-row"><span class="form-label">種類</span><div class="type-btns" id="milkType"><button class="type-btn" data-val="breast">母乳</button><button class="type-btn" data-val="formula">ミルク</button><button class="type-btn" data-val="mixed">混合</button></div></div>
+    <div class="form-row cond-field" id="breastFields"><span class="form-label">左右 / 時間</span><div class="side-btns" style="margin-bottom:8px"><button class="side-btn" data-side="left">左</button><button class="side-btn" data-side="right">右</button><button class="side-btn" data-side="both">両方</button></div><div class="num-input-row"><span class="form-label" style="margin:0;min-width:20px">左</span><input type="number" class="num-input" id="breastLeftMin" placeholder="0" min="0" max="60"><span class="num-unit">分</span><span class="form-label" style="margin:0;min-width:20px;margin-left:8px">右</span><input type="number" class="num-input" id="breastRightMin" placeholder="0" min="0" max="60"><span class="num-unit">分</span></div></div>
+    <div class="form-row cond-field" id="formulaFields"><span class="form-label">ミルク量</span><div class="num-input-row"><input type="number" class="num-input" id="formulaMl" placeholder="0" min="0" max="300" step="10"><span class="num-unit">ml</span></div></div>
+    <div class="form-row"><span class="form-label">時刻</span><input type="time" class="time-input" id="milkTime"></div>
+    <div class="form-row"><span class="form-label">メモ</span><textarea class="memo-input" id="milkMemo" placeholder="げっぷ出た、吐き戻しなど"></textarea></div>
+    <button class="submit-btn" id="milkSubmit" disabled>記録する</button>
+  </div>
+  <div class="section-title">記録一覧</div>
+  <div class="log-list" id="milkLog"></div>
 </div>
 
 <!-- DIAPER -->
 <div class="tab-content" id="tab-diaper">
-  <div class="placeholder">
-    <div class="placeholder-icon">&#9675;</div>
-    <h3>おむつ・うんち記録</h3>
-    <p>おむつ替えの回数や<br>うんちの状態を記録できます。<br><br><span style="color:var(--gold);">coming soon</span></p>
+  <div class="section-title">今日のおむつ</div>
+  <div class="today-summary">
+    <div class="summary-chip"><div class="num" id="diaperCountToday">0</div><div class="label">回</div></div>
+    <div class="summary-chip"><div class="num" id="diaperPeeCount">0</div><div class="label">おしっこ</div></div>
+    <div class="summary-chip"><div class="num" id="diaperPoopCount">0</div><div class="label">うんち</div></div>
+    <div class="summary-chip"><div class="num" id="diaperLastTime">--:--</div><div class="label">最後</div></div>
   </div>
+  <div class="record-form">
+    <div class="form-row"><span class="form-label">内容</span><div class="type-btns" id="diaperType"><button class="type-btn" data-val="pee">おしっこ</button><button class="type-btn" data-val="poop">うんち</button><button class="type-btn" data-val="both">両方</button></div></div>
+    <div class="form-row cond-field" id="poopFields"><span class="form-label">うんちの状態</span><div class="type-btns" id="poopState"><button class="type-btn" data-val="normal">普通</button><button class="type-btn" data-val="soft">ゆるめ</button><button class="type-btn" data-val="hard">硬め</button><button class="type-btn" data-val="watery">水っぽい</button></div></div>
+    <div class="form-row cond-field" id="poopColorField"><span class="form-label">うんちの色</span><div class="type-btns" id="poopColor"><button class="type-btn" data-val="yellow">黄色</button><button class="type-btn" data-val="green">緑</button><button class="type-btn" data-val="dark">黒緑</button><button class="type-btn" data-val="other">その他</button></div></div>
+    <div class="form-row"><span class="form-label">時刻</span><input type="time" class="time-input" id="diaperTime"></div>
+    <div class="form-row"><span class="form-label">メモ</span><textarea class="memo-input" id="diaperMemo" placeholder="量が多い、おむつかぶれなど"></textarea></div>
+    <button class="submit-btn" id="diaperSubmit" disabled>記録する</button>
+  </div>
+  <div class="section-title">記録一覧</div>
+  <div class="log-list" id="diaperLog"></div>
+</div>
+
+<!-- TEMP -->
+<div class="tab-content" id="tab-temp">
+  <div class="section-title">今日の体温</div>
+  <div class="today-summary">
+    <div class="summary-chip"><div class="num" id="tempCount">0</div><div class="label">回</div></div>
+    <div class="summary-chip"><div class="num" id="tempLatest">--.-</div><div class="label">最新(&#8451;)</div></div>
+    <div class="summary-chip"><div class="num" id="tempHigh">--.-</div><div class="label">最高</div></div>
+    <div class="summary-chip"><div class="num" id="tempLow">--.-</div><div class="label">最低</div></div>
+  </div>
+  <div class="record-form">
+    <div class="form-row">
+      <span class="form-label">体温</span>
+      <div class="num-input-row">
+        <input type="number" class="num-input" id="tempValue" placeholder="36.8" min="34" max="42" step="0.1" style="width:100px;font-size:1.3rem">
+        <span class="num-unit">&#8451;</span>
+      </div>
+    </div>
+    <div class="form-row">
+      <span class="form-label">測定部位</span>
+      <div class="type-btns" id="tempSite">
+        <button class="type-btn active" data-val="armpit">脇</button>
+        <button class="type-btn" data-val="ear">耳</button>
+        <button class="type-btn" data-val="forehead">おでこ</button>
+      </div>
+    </div>
+    <div class="form-row"><span class="form-label">時刻</span><input type="time" class="time-input" id="tempTime"></div>
+    <div class="form-row"><span class="form-label">メモ</span><textarea class="memo-input" id="tempMemo" placeholder="服を着せすぎてたかも、など"></textarea></div>
+    <button class="submit-btn" id="tempSubmit">記録する</button>
+  </div>
+  <div class="section-title">記録一覧</div>
+  <div class="log-list" id="tempLog"></div>
+</div>
+
+<!-- SLEEP -->
+<div class="tab-content" id="tab-sleep">
+  <div class="section-title">今日の睡眠</div>
+  <div class="today-summary">
+    <div class="summary-chip"><div class="num" id="sleepTotal">0h0m</div><div class="label">合計</div></div>
+    <div class="summary-chip"><div class="num" id="sleepCount">0</div><div class="label">回</div></div>
+    <div class="summary-chip"><div class="num" id="sleepStatus">--</div><div class="label">現在</div></div>
+  </div>
+
+  <!-- Sleep timeline bar -->
+  <div style="background:#fff;border-radius:12px;padding:12px;margin-bottom:16px;border:1px solid rgba(200,164,110,.12)">
+    <div class="sleep-hours-row"><span>0時</span><span>6時</span><span>12時</span><span>18時</span><span>24時</span></div>
+    <div class="sleep-bar"><div class="filled" id="sleepBarFill" style="width:0%"></div></div>
+    <div id="sleepTimeline"></div>
+  </div>
+
+  <div style="display:flex;gap:8px;margin-bottom:16px">
+    <button class="submit-btn" id="sleepStartBtn" style="background:#7986cb">寝た</button>
+    <button class="submit-btn" id="sleepEndBtn" style="background:#ffb74d;color:var(--text)">起きた</button>
+  </div>
+
+  <div class="record-form">
+    <div class="section-title" style="margin-bottom:8px">手動で追加</div>
+    <div class="form-row">
+      <span class="form-label">種類</span>
+      <div class="type-btns" id="sleepType">
+        <button class="type-btn" data-val="start">寝た</button>
+        <button class="type-btn" data-val="end">起きた</button>
+      </div>
+    </div>
+    <div class="form-row"><span class="form-label">時刻</span><input type="time" class="time-input" id="sleepTime"></div>
+    <div class="form-row"><span class="form-label">メモ</span><textarea class="memo-input" id="sleepMemo" placeholder="ぐずった、授乳で起きたなど"></textarea></div>
+    <button class="submit-btn" id="sleepSubmit" disabled>記録する</button>
+  </div>
+  <div class="section-title">記録一覧</div>
+  <div class="log-list" id="sleepLog"></div>
 </div>
 
 <!-- GROWTH -->
 <div class="tab-content" id="tab-growth">
-  <div class="placeholder">
-    <div class="placeholder-icon">&#9651;</div>
-    <h3>成長記録</h3>
-    <p>体重・身長の推移と<br>写真で振り返る成長アルバム。<br><br><span style="color:var(--gold);">coming soon</span></p>
+  <div class="section-title">成長のきろく</div>
+  <div class="today-summary">
+    <div class="summary-chip"><div class="num" id="growthWeight">--</div><div class="label">体重(g)</div></div>
+    <div class="summary-chip"><div class="num" id="growthHeight">--</div><div class="label">身長(cm)</div></div>
+    <div class="summary-chip"><div class="num" id="growthHead">--</div><div class="label">頭囲(cm)</div></div>
+    <div class="summary-chip"><div class="num" id="growthDiff">--</div><div class="label">出生比(g)</div></div>
   </div>
+  <div style="background:#fff;border-radius:16px;padding:12px;margin-bottom:16px;border:1px solid rgba(200,164,110,.12)">
+    <div style="display:flex;gap:6px;margin-bottom:8px"><button class="type-btn active" id="chartWeight" onclick="switchChart('weight')">体重</button><button class="type-btn" id="chartHeight" onclick="switchChart('height')">身長</button></div>
+    <canvas id="growthChart" width="600" height="280" style="width:100%;height:auto"></canvas>
+  </div>
+  <div class="record-form">
+    <div class="form-row"><span class="form-label">日付</span><input type="date" class="time-input" id="growthDate"></div>
+    <div class="form-row"><span class="form-label">体重</span><div class="num-input-row"><input type="number" class="num-input" id="growthWeightIn" placeholder="3054" min="0" max="15000" step="1"><span class="num-unit">g</span></div></div>
+    <div class="form-row"><span class="form-label">身長</span><div class="num-input-row"><input type="number" class="num-input" id="growthHeightIn" placeholder="50.5" min="0" max="120" step="0.1"><span class="num-unit">cm</span></div></div>
+    <div class="form-row"><span class="form-label">頭囲（任意）</span><div class="num-input-row"><input type="number" class="num-input" id="growthHeadIn" placeholder="" min="0" max="60" step="0.1"><span class="num-unit">cm</span></div></div>
+    <div class="form-row"><span class="form-label">メモ</span><textarea class="memo-input" id="growthMemo" placeholder="1か月健診、など"></textarea></div>
+    <button class="submit-btn" id="growthSubmit">記録する</button>
+  </div>
+  <div class="section-title">記録一覧</div>
+  <div class="log-list" id="growthLog"></div>
 </div>
 
 <!-- GUIDE -->
 <div class="tab-content" id="tab-guide">
-  <div class="guide-section">
-    <h3>おしっこ</h3>
-    <p>十分にミルク・母乳を飲んでいれば、薄い色のおしっこが1日6〜8回出ます。</p>
-    <p class="note">※ オレンジ色の尿 → 腎臓が未熟なため。出血ではなく自然になくなります。</p>
-  </div>
-
-  <div class="guide-section">
-    <h3>うんち</h3>
-    <p>生後すぐは黒緑色（胎便）、2〜3日で黄色混じり、4〜5日で黄色い泥状に。母乳中心だと水っぽく、ミルク中心だとやや硬め。</p>
-    <p class="note">※ 1日出ない・お腹が張る → 綿棒で肛門を刺激。色は便色カードで確認。</p>
-  </div>
-
-  <div class="guide-section">
-    <h3>嘔吐（溢乳）</h3>
-    <p>げっぷと一緒に少量吐いたり、口からミルクが流れるのは「溢乳（いつにゅう）」。赤ちゃんの胃は吐きやすい形なので心配いりません。</p>
-    <p class="note">！ 授乳のたびに噴水のように吐く場合は受診してください。</p>
-  </div>
-
-  <div class="guide-section">
-    <h3>黄疸（おうだん）</h3>
-    <p>肌や白目が黄色くなる生理的黄疸は、日本人の赤ちゃんの90%以上に出現。肝臓が未熟でビリルビンを排出しにくいため。生後4〜5日がピーク、1〜2週間で落ち着きます。</p>
-    <p class="note">※ 母乳育児で1か月以上続くこともあるが、元気で飲みがよければ安心。</p>
-  </div>
-
-  <div class="guide-section">
-    <h3>体温</h3>
-    <p>新生児の平熱は大人より高めの37.0℃前後。体温調節が未熟で、些細なことで上がりやすい。高い時は室温や服を調整し、脇で再測定を。</p>
-    <p class="note">※ 耳の体温計は誤差が大きいので、脇での測定がおすすめ。</p>
-  </div>
-
-  <div class="guide-section">
-    <h3>鼻・くしゃみ・しゃっくり</h3>
-    <p>フガフガ・グーグーという音は鼻の穴が狭いだけ。粘膜が敏感でくしゃみが多く、横隔膜が未熟でしゃっくりも頻繁。すべて心配不要です。</p>
-  </div>
-
-  <div class="guide-section">
-    <h3>スキンケア</h3>
-    <p>おむつかぶれ：こまめに替え、優しく拭く。ひどい時はお湯で洗い流す。首・耳の後ろ・脇は密着部分がただれやすいので、しっかり洗いましょう。</p>
-  </div>
-
-  <div class="guide-section">
-    <h3>赤ちゃんの免疫</h3>
-    <p>お母さんからもらった免疫と母乳の免疫で守られています。生後半年頃までは病気にかかりにくいと言われています。</p>
-  </div>
-
-  <div class="guide-alert">
-    <h3>こんなときは病院に相談</h3>
-    <ul>
-      <li>便の色が便色カード1〜3番</li>
-      <li>授乳のたびに噴水状に吐く</li>
-      <li>黄疸が強く感じる</li>
-      <li>おへその赤み・臭いが強い</li>
-      <li>38℃以上の発熱が続く</li>
-      <li>ぐったり・飲みが悪い</li>
-    </ul>
-  </div>
+  <div class="guide-section"><h3>おしっこ</h3><p>十分にミルク・母乳を飲んでいれば、薄い色のおしっこが1日6〜8回出ます。</p><p class="note">※ オレンジ色の尿 → 腎臓が未熟なため。出血ではなく自然になくなります。</p></div>
+  <div class="guide-section"><h3>うんち</h3><p>生後すぐは黒緑色（胎便）、2〜3日で黄色混じり、4〜5日で黄色い泥状に。母乳中心だと水っぽく、ミルク中心だとやや硬め。</p><p class="note">※ 1日出ない・お腹が張る → 綿棒で肛門を刺激。色は便色カードで確認。</p></div>
+  <div class="guide-section"><h3>嘔吐（溢乳）</h3><p>げっぷと一緒に少量吐いたり、口からミルクが流れるのは「溢乳（いつにゅう）」。赤ちゃんの胃は吐きやすい形なので心配いりません。</p><p class="note">！ 授乳のたびに噴水のように吐く場合は受診してください。</p></div>
+  <div class="guide-section"><h3>黄疸（おうだん）</h3><p>肌や白目が黄色くなる生理的黄疸は、日本人の赤ちゃんの90%以上に出現。肝臓が未熟でビリルビンを排出しにくいため。生後4〜5日がピーク、1〜2週間で落ち着きます。</p><p class="note">※ 母乳育児で1か月以上続くこともあるが、元気で飲みがよければ安心。</p></div>
+  <div class="guide-section"><h3>体温</h3><p>新生児の平熱は大人より高めの37.0℃前後。体温調節が未熟で、些細なことで上がりやすい。高い時は室温や服を調整し、脇で再測定を。</p><p class="note">※ 耳の体温計は誤差が大きいので、脇での測定がおすすめ。</p></div>
+  <div class="guide-section"><h3>鼻・くしゃみ・しゃっくり</h3><p>フガフガ・グーグーという音は鼻の穴が狭いだけ。粘膜が敏感でくしゃみが多く、横隔膜が未熟でしゃっくりも頻繁。すべて心配不要です。</p></div>
+  <div class="guide-section"><h3>スキンケア</h3><p>おむつかぶれ：こまめに替え、優しく拭く。ひどい時はお湯で洗い流す。首・耳の後ろ・脇は密着部分がただれやすいので、しっかり洗いましょう。</p></div>
+  <div class="guide-section"><h3>赤ちゃんの免疫</h3><p>お母さんからもらった免疫と母乳の免疫で守られています。生後半年頃までは病気にかかりにくいと言われています。</p></div>
+  <div class="guide-alert"><h3>こんなときは病院に相談</h3><ul><li>便の色が便色カード1〜3番</li><li>授乳のたびに噴水状に吐く</li><li>黄疸が強く感じる</li><li>おへその赤み・臭いが強い</li><li>38℃以上の発熱が続く</li><li>ぐったり・飲みが悪い</li></ul></div>
 </div>
 
 <script>
-  // Days counter
-  function updateDays() {
-    const birth = new Date(2026, 1, 19); // Feb 19, 2026
-    const now = new Date();
-    const diff = Math.floor((now - birth) / (1000 * 60 * 60 * 24)) + 1;
-    document.getElementById('daysCount').textContent = '生後 ' + diff + ' 日目';
-  }
-  updateDays();
+const BIRTH=new Date(2026,1,19),BIRTH_W=3054,BIRTH_H=50.5;
+const todayStr=()=>new Date().toISOString().slice(0,10);
+const nowTime=()=>{const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+function load(k){try{return JSON.parse(localStorage.getItem(k))||[]}catch{return[]}}
+function save(k,d){localStorage.setItem(k,JSON.stringify(d))}
+function daysSince(dateStr){return Math.floor((new Date(dateStr)-BIRTH)/864e5)+1}
 
-  // Tab switching
-  const tabs = document.querySelectorAll('.tab-btn');
-  const contents = document.querySelectorAll('.tab-content');
+// Days count
+document.getElementById('daysCount').textContent='生後 '+(Math.floor((new Date()-BIRTH)/864e5)+1)+' 日目';
 
-  tabs.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const target = btn.dataset.tab;
-
-      tabs.forEach(t => t.classList.remove('active'));
-      btn.classList.add('active');
-
-      contents.forEach(c => {
-        c.classList.remove('active');
-        if (c.id === 'tab-' + target) {
-          c.classList.add('active');
-        }
-      });
-
-      // Scroll to top of content
-      if (target !== 'home') {
-        document.querySelector('.tab-bar').scrollIntoView({ behavior: 'smooth' });
-      }
-    });
+// Tabs
+const heroEl=document.getElementById('heroSection');
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const t=btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(c=>{c.classList.remove('active');if(c.id==='tab-'+t)c.classList.add('active')});
+    heroEl.style.display=t==='home'?'':'none';
+    if(t!=='home')window.scrollTo(0,0);
+    if(t==='growth')setTimeout(drawChart,50);
   });
-</script>
+});
 
+function setupGroup(id,cb){const el=document.getElementById(id);if(!el)return;el.querySelectorAll('.type-btn').forEach(b=>b.addEventListener('click',()=>{el.querySelectorAll('.type-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');if(cb)cb(b.dataset.val)}))}
+
+// ===== MILK =====
+let milkSide=null;
+setupGroup('milkType',v=>{document.getElementById('breastFields').classList.toggle('show',v==='breast'||v==='mixed');document.getElementById('formulaFields').classList.toggle('show',v==='formula'||v==='mixed');document.getElementById('milkSubmit').disabled=false});
+document.querySelectorAll('#breastFields .side-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#breastFields .side-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');milkSide=b.dataset.side}));
+document.getElementById('milkTime').value=nowTime();
+document.getElementById('milkSubmit').addEventListener('click',()=>{
+  const te=document.querySelector('#milkType .type-btn.active');if(!te)return;
+  const r={id:Date.now(),date:todayStr(),time:document.getElementById('milkTime').value||nowTime(),type:te.dataset.val,leftMin:parseInt(document.getElementById('breastLeftMin').value)||0,rightMin:parseInt(document.getElementById('breastRightMin').value)||0,side:milkSide,formulaMl:parseInt(document.getElementById('formulaMl').value)||0,memo:document.getElementById('milkMemo').value.trim()};
+  const d=load('mito_milk');d.unshift(r);save('mito_milk',d);
+  document.querySelectorAll('#milkType .type-btn,#breastFields .side-btn').forEach(b=>b.classList.remove('active'));
+  ['breastFields','formulaFields'].forEach(id=>document.getElementById(id).classList.remove('show'));
+  ['breastLeftMin','breastRightMin','formulaMl'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('milkMemo').value='';document.getElementById('milkTime').value=nowTime();document.getElementById('milkSubmit').disabled=true;milkSide=null;renderMilk()});
+function renderMilk(){
+  const data=load('mito_milk'),today=todayStr(),td=data.filter(r=>r.date===today);
+  document.getElementById('milkCountToday').textContent=td.length;
+  document.getElementById('milkBreastMin').textContent=td.reduce((s,r)=>s+(r.leftMin||0)+(r.rightMin||0),0);
+  document.getElementById('milkFormulaMl').textContent=td.reduce((s,r)=>s+(r.formulaMl||0),0);
+  document.getElementById('milkLastTime').textContent=td.length?td[0].time:'--:--';
+  const el=document.getElementById('milkLog');if(!data.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-light);font-size:.8rem">まだ記録がありません</div>';return}
+  const TL={breast:'母乳',formula:'ミルク',mixed:'混合'},SL={left:'左',right:'右',both:'両方'};
+  let h='',ld='';
+  data.forEach(r=>{if(r.date!==ld){h+='<div class="log-date-header">'+r.date.replace(/-/g,'/')+'（生後'+daysSince(r.date)+'日）</div>';ld=r.date}let det=TL[r.type]||'';if(r.type==='breast'||r.type==='mixed'){const p=[];if(r.side)p.push(SL[r.side]||'');if(r.leftMin)p.push('左'+r.leftMin+'分');if(r.rightMin)p.push('右'+r.rightMin+'分');if(p.length)det+=' '+p.join(' / ')}if((r.type==='formula'||r.type==='mixed')&&r.formulaMl)det+=' '+r.formulaMl+'ml';h+='<div class="log-item"><div class="log-time">'+r.time+'</div><div class="log-body"><span class="log-badge '+r.type+'">'+(TL[r.type]||'')+'</span> <span class="log-detail">'+det+'</span>'+(r.memo?'<div class="log-memo">'+r.memo+'</div>':'')+'</div><button class="log-delete" data-key="mito_milk" data-id="'+r.id+'">&#10005;</button></div>'});
+  el.innerHTML=h}
+
+// ===== DIAPER =====
+let dpState=null,dpColor=null;
+setupGroup('diaperType',v=>{const sp=v==='poop'||v==='both';document.getElementById('poopFields').classList.toggle('show',sp);document.getElementById('poopColorField').classList.toggle('show',sp);document.getElementById('diaperSubmit').disabled=false});
+setupGroup('poopState',v=>{dpState=v});setupGroup('poopColor',v=>{dpColor=v});
+document.getElementById('diaperTime').value=nowTime();
+document.getElementById('diaperSubmit').addEventListener('click',()=>{
+  const te=document.querySelector('#diaperType .type-btn.active');if(!te)return;
+  const r={id:Date.now(),date:todayStr(),time:document.getElementById('diaperTime').value||nowTime(),type:te.dataset.val,poopState:dpState,poopColor:dpColor,memo:document.getElementById('diaperMemo').value.trim()};
+  const d=load('mito_diaper');d.unshift(r);save('mito_diaper',d);
+  document.querySelectorAll('#diaperType .type-btn,#poopState .type-btn,#poopColor .type-btn').forEach(b=>b.classList.remove('active'));
+  ['poopFields','poopColorField'].forEach(id=>document.getElementById(id).classList.remove('show'));
+  document.getElementById('diaperMemo').value='';document.getElementById('diaperTime').value=nowTime();document.getElementById('diaperSubmit').disabled=true;dpState=null;dpColor=null;renderDiaper()});
+function renderDiaper(){
+  const data=load('mito_diaper'),today=todayStr(),td=data.filter(r=>r.date===today);
+  document.getElementById('diaperCountToday').textContent=td.length;
+  document.getElementById('diaperPeeCount').textContent=td.filter(r=>r.type==='pee'||r.type==='both').length;
+  document.getElementById('diaperPoopCount').textContent=td.filter(r=>r.type==='poop'||r.type==='both').length;
+  document.getElementById('diaperLastTime').textContent=td.length?td[0].time:'--:--';
+  const el=document.getElementById('diaperLog');if(!data.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-light);font-size:.8rem">まだ記録がありません</div>';return}
+  const TL={pee:'おしっこ',poop:'うんち',both:'両方'},STL={normal:'普通',soft:'ゆるめ',hard:'硬め',watery:'水っぽい'},CL={yellow:'黄色',green:'緑',dark:'黒緑',other:'その他'};
+  let h='',ld='';
+  data.forEach(r=>{if(r.date!==ld){h+='<div class="log-date-header">'+r.date.replace(/-/g,'/')+'（生後'+daysSince(r.date)+'日）</div>';ld=r.date}let det='';if(r.poopState)det+=STL[r.poopState]||'';if(r.poopColor)det+=(det?' / ':'')+(CL[r.poopColor]||'');h+='<div class="log-item"><div class="log-time">'+r.time+'</div><div class="log-body"><span class="log-badge '+r.type+'">'+(TL[r.type]||'')+'</span> '+(det?'<span class="log-detail">'+det+'</span>':'')+(r.memo?'<div class="log-memo">'+r.memo+'</div>':'')+'</div><button class="log-delete" data-key="mito_diaper" data-id="'+r.id+'">&#10005;</button></div>'});
+  el.innerHTML=h}
+
+// ===== TEMP =====
+let tempSite='armpit';
+setupGroup('tempSite',v=>{tempSite=v});
+document.getElementById('tempTime').value=nowTime();
+document.getElementById('tempSubmit').addEventListener('click',()=>{
+  const v=parseFloat(document.getElementById('tempValue').value);if(!v||v<34||v>42){alert('体温を入力してください');return}
+  const r={id:Date.now(),date:todayStr(),time:document.getElementById('tempTime').value||nowTime(),temp:v,site:tempSite,memo:document.getElementById('tempMemo').value.trim()};
+  const d=load('mito_temp');d.unshift(r);save('mito_temp',d);
+  document.getElementById('tempValue').value='';document.getElementById('tempMemo').value='';document.getElementById('tempTime').value=nowTime();renderTemp()});
+function renderTemp(){
+  const data=load('mito_temp'),today=todayStr(),td=data.filter(r=>r.date===today);
+  document.getElementById('tempCount').textContent=td.length;
+  const temps=td.map(r=>r.temp).filter(Boolean);
+  document.getElementById('tempLatest').textContent=td.length?td[0].temp.toFixed(1):'--.-';
+  document.getElementById('tempHigh').textContent=temps.length?Math.max(...temps).toFixed(1):'--.-';
+  document.getElementById('tempLow').textContent=temps.length?Math.min(...temps).toFixed(1):'--.-';
+  const el=document.getElementById('tempLog');if(!data.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-light);font-size:.8rem">まだ記録がありません</div>';return}
+  const SITE={armpit:'脇',ear:'耳',forehead:'おでこ'};
+  let h='',ld='';
+  data.forEach(r=>{if(r.date!==ld){h+='<div class="log-date-header">'+r.date.replace(/-/g,'/')+'（生後'+daysSince(r.date)+'日）</div>';ld=r.date}
+  const cls=r.temp>=37.5?'temp-high':r.temp<36.0?'temp-low':'temp-normal';
+  h+='<div class="log-item"><div class="log-time">'+r.time+'</div><div class="log-body"><span class="log-badge '+cls+'">'+r.temp.toFixed(1)+'&#8451;</span> <span class="log-detail">'+(SITE[r.site]||'')+'</span>'+(r.memo?'<div class="log-memo">'+r.memo+'</div>':'')+'</div><button class="log-delete" data-key="mito_temp" data-id="'+r.id+'">&#10005;</button></div>'});
+  el.innerHTML=h}
+
+// ===== SLEEP =====
+setupGroup('sleepType',()=>{document.getElementById('sleepSubmit').disabled=false});
+document.getElementById('sleepTime').value=nowTime();
+
+function addSleepRecord(type,time,memo){
+  const r={id:Date.now(),date:todayStr(),time:time||nowTime(),type:type,memo:memo||''};
+  const d=load('mito_sleep');d.unshift(r);save('mito_sleep',d);renderSleep()}
+
+document.getElementById('sleepStartBtn').addEventListener('click',()=>addSleepRecord('start',nowTime(),''));
+document.getElementById('sleepEndBtn').addEventListener('click',()=>addSleepRecord('end',nowTime(),''));
+document.getElementById('sleepSubmit').addEventListener('click',()=>{
+  const te=document.querySelector('#sleepType .type-btn.active');if(!te)return;
+  addSleepRecord(te.dataset.val,document.getElementById('sleepTime').value,document.getElementById('sleepMemo').value.trim());
+  document.querySelectorAll('#sleepType .type-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sleepMemo').value='';document.getElementById('sleepTime').value=nowTime();document.getElementById('sleepSubmit').disabled=true});
+
+function renderSleep(){
+  const data=load('mito_sleep'),today=todayStr(),td=data.filter(r=>r.date===today);
+  // Calculate total sleep
+  const sorted=[...td].sort((a,b)=>a.time.localeCompare(b.time));
+  let totalMin=0,sleeping=false,sleepStart='';
+  sorted.forEach(r=>{if(r.type==='start'){sleeping=true;sleepStart=r.time}else if(r.type==='end'&&sleeping){const[sh,sm]=sleepStart.split(':').map(Number);const[eh,em]=r.time.split(':').map(Number);totalMin+=(eh*60+em)-(sh*60+sm);sleeping=false}});
+  // If still sleeping, count until now
+  if(sleeping){const[sh,sm]=sleepStart.split(':').map(Number);const n=new Date();totalMin+=(n.getHours()*60+n.getMinutes())-(sh*60+sm)}
+  const hrs=Math.floor(totalMin/60),mins=totalMin%60;
+  document.getElementById('sleepTotal').textContent=hrs+'h'+mins+'m';
+  document.getElementById('sleepCount').textContent=sorted.filter(r=>r.type==='start').length;
+  // Current status
+  const latest=td.length?td[0]:null;
+  document.getElementById('sleepStatus').textContent=latest?(latest.type==='start'?'睡眠中':'起きてる'):'--';
+
+  // Timeline bar
+  const bar=document.getElementById('sleepTimeline');
+  if(totalMin>0){const pct=Math.min((totalMin/(24*60))*100,100);document.getElementById('sleepBarFill').style.width=pct+'%'}else{document.getElementById('sleepBarFill').style.width='0%'}
+
+  // Log
+  const el=document.getElementById('sleepLog');if(!data.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-light);font-size:.8rem">まだ記録がありません</div>';return}
+  const TL={start:'寝た',end:'起きた'};
+  let h='',ld='';
+  data.forEach(r=>{if(r.date!==ld){h+='<div class="log-date-header">'+r.date.replace(/-/g,'/')+'（生後'+daysSince(r.date)+'日）</div>';ld=r.date}
+  h+='<div class="log-item"><div class="log-time">'+r.time+'</div><div class="log-body"><span class="log-badge sleep-'+r.type+'">'+(TL[r.type]||'')+'</span>'+(r.memo?' <span class="log-detail">'+r.memo+'</span>':'')+'</div><button class="log-delete" data-key="mito_sleep" data-id="'+r.id+'">&#10005;</button></div>'});
+  el.innerHTML=h}
+
+// ===== GROWTH =====
+let chartMode='weight';
+!function(){let d=load('mito_growth');if(!d.length){d.push({id:1,date:'2026-02-19',weight:BIRTH_W,height:BIRTH_H,head:null,memo:'出生時'});save('mito_growth',d)}}();
+document.getElementById('growthDate').value=todayStr();
+document.getElementById('growthSubmit').addEventListener('click',()=>{
+  const w=parseFloat(document.getElementById('growthWeightIn').value),h=parseFloat(document.getElementById('growthHeightIn').value);
+  if(!w&&!h){alert('体重か身長を入力してください');return}
+  const r={id:Date.now(),date:document.getElementById('growthDate').value||todayStr(),weight:w||null,height:h||null,head:parseFloat(document.getElementById('growthHeadIn').value)||null,memo:document.getElementById('growthMemo').value.trim()};
+  const d=load('mito_growth');d.push(r);d.sort((a,b)=>a.date.localeCompare(b.date));save('mito_growth',d);
+  ['growthWeightIn','growthHeightIn','growthHeadIn'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('growthMemo').value='';document.getElementById('growthDate').value=todayStr();renderGrowth()});
+function switchChart(m){chartMode=m;document.getElementById('chartWeight').classList.toggle('active',m==='weight');document.getElementById('chartHeight').classList.toggle('active',m==='height');drawChart()}
+function drawChart(){
+  const canvas=document.getElementById('growthChart'),ctx=canvas.getContext('2d'),dpr=window.devicePixelRatio||1,rect=canvas.getBoundingClientRect();
+  canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;ctx.scale(dpr,dpr);
+  const W=rect.width,H=rect.height;ctx.clearRect(0,0,W,H);
+  const data=load('mito_growth').filter(r=>chartMode==='weight'?r.weight:r.height);
+  if(data.length<1){ctx.fillStyle='#9a7a7a';ctx.font='13px "Zen Maru Gothic"';ctx.fillText('データがありません',W/2-60,H/2);return}
+  const vals=data.map(r=>chartMode==='weight'?r.weight:r.height);
+  const minV=Math.min(...vals)*.95,maxV=Math.max(...vals)*1.05;
+  const pL=50,pR=16,pT=20,pB=36,cw=W-pL-pR,ch=H-pT-pB;
+  ctx.strokeStyle='rgba(200,164,110,.15)';ctx.lineWidth=.5;
+  for(let i=0;i<=4;i++){const y=pT+(ch/4)*i;ctx.beginPath();ctx.moveTo(pL,y);ctx.lineTo(W-pR,y);ctx.stroke();const v=maxV-(maxV-minV)*(i/4);ctx.fillStyle='#9a7a7a';ctx.font='10px "Zen Maru Gothic"';ctx.textAlign='right';ctx.fillText(chartMode==='weight'?Math.round(v)+'g':v.toFixed(1)+'cm',pL-6,y+4)}
+  if(data.length===1){const x=pL+cw/2,y=pT+ch/2;ctx.fillStyle='#d4708a';ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#4a3030';ctx.font='10px "Zen Maru Gothic"';ctx.textAlign='center';ctx.fillText(vals[0]+(chartMode==='weight'?'g':'cm'),x,y-10);ctx.fillText(data[0].date.slice(5).replace('-','/'),x,H-8);return}
+  ctx.strokeStyle='#d4708a';ctx.lineWidth=2;ctx.lineJoin='round';ctx.beginPath();
+  data.forEach((r,i)=>{const x=pL+(cw/(data.length-1))*i,v=chartMode==='weight'?r.weight:r.height,y=pT+ch-((v-minV)/(maxV-minV))*ch;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});
+  ctx.stroke();ctx.globalAlpha=.08;ctx.fillStyle='#d4708a';ctx.lineTo(pL+cw,pT+ch);ctx.lineTo(pL,pT+ch);ctx.fill();ctx.globalAlpha=1;
+  data.forEach((r,i)=>{const x=pL+(cw/(data.length-1))*i,v=chartMode==='weight'?r.weight:r.height,y=pT+ch-((v-minV)/(maxV-minV))*ch;ctx.fillStyle='#d4708a';ctx.beginPath();ctx.arc(x,y,3.5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#9a7a7a';ctx.font='9px "Zen Maru Gothic"';ctx.textAlign='center';const show=data.length<=10||i%Math.ceil(data.length/8)===0||i===data.length-1;if(show)ctx.fillText(r.date.slice(5).replace('-','/'),x,H-8)})}
+function renderGrowth(){
+  const data=load('mito_growth'),latest=data.length?data[data.length-1]:null;
+  document.getElementById('growthWeight').textContent=latest&&latest.weight?latest.weight:'--';
+  document.getElementById('growthHeight').textContent=latest&&latest.height?latest.height:'--';
+  document.getElementById('growthHead').textContent=latest&&latest.head?latest.head:'--';
+  if(latest&&latest.weight){const diff=latest.weight-BIRTH_W;document.getElementById('growthDiff').textContent=(diff>=0?'+':'')+diff}else{document.getElementById('growthDiff').textContent='--'}
+  const el=document.getElementById('growthLog');if(!data.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-light);font-size:.8rem">まだ記録がありません</div>';drawChart();return}
+  let h='';[...data].reverse().forEach(r=>{let det='';if(r.weight)det+=r.weight+'g';if(r.height)det+=(det?' / ':'')+r.height+'cm';if(r.head)det+=(det?' / ':'')+'頭囲'+r.head+'cm';h+='<div class="log-item"><div class="log-time">'+r.date.slice(5).replace('-','/')+'</div><div class="log-body"><span class="log-detail">生後'+daysSince(r.date)+'日　'+det+'</span>'+(r.memo?'<div class="log-memo">'+r.memo+'</div>':'')+'</div>'+(r.id!==1?'<button class="log-delete" data-key="mito_growth" data-id="'+r.id+'">&#10005;</button>':'')+'</div>'});
+  el.innerHTML=h;drawChart()}
+
+// ===== DELETE =====
+document.addEventListener('click',e=>{if(!e.target.classList.contains('log-delete'))return;if(!confirm('この記録を削除しますか？'))return;const k=e.target.dataset.key,id=parseInt(e.target.dataset.id);save(k,load(k).filter(r=>r.id!==id));({mito_milk:renderMilk,mito_diaper:renderDiaper,mito_temp:renderTemp,mito_sleep:renderSleep,mito_growth:renderGrowth})[k]()});
+
+// Init
+renderMilk();renderDiaper();renderTemp();renderSleep();renderGrowth();
+</script>
 </body>
 </html>
