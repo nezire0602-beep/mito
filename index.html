@@ -94,6 +94,13 @@
     letter-spacing: 0.1em;
   }
 
+  .hero-birth-stats {
+    font-size: 0.7rem;
+    color: var(--text-light);
+    letter-spacing: 0.05em;
+    margin-top: 2px;
+  }
+
   .hero-days {
     display: inline-block;
     margin-top: 8px;
@@ -289,7 +296,8 @@
   <div class="hero-text">
     <div class="hero-name">mito</div>
     <div class="hero-name-jp">深 音</div>
-    <div class="hero-birthday">2025.02.19 born</div>
+    <div class="hero-birthday">2026.02.19  18:40  born</div>
+    <div class="hero-birth-stats">3054g / 50.5cm</div>
     <div class="hero-days" id="daysCount"></div>
   </div>
 </div>
@@ -419,9 +427,9 @@
 <script>
   // Days counter
   function updateDays() {
-    const birth = new Date(2025, 1, 19); // Feb 19, 2025
+    const birth = new Date(2026, 1, 19); // Feb 19, 2026
     const now = new Date();
-    const diff = Math.floor((now - birth) / (1000 * 60 * 60 * 24));
+    const diff = Math.floor((now - birth) / (1000 * 60 * 60 * 24)) + 1;
     document.getElementById('daysCount').textContent = '生後 ' + diff + ' 日目';
   }
   updateDays();
