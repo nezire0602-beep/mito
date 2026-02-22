@@ -416,23 +416,19 @@ const auth=firebase.auth(),db=firebase.firestore();
 let uid=null;
 
 // ===== Auth =====
-// Handle redirect result first
-auth.getRedirectResult().then(result=>{
-  if(result.user)console.log('Redirect login OK:',result.user.displayName);
-}).catch(e=>{console.warn('Redirect error:',e);document.getElementById('loginLoading').style.display='none'});
-
-document.getElementById('googleLoginBtn').addEventListener('click',()=>{
+document.getElementById('googleLoginBtn').addEventListener('click',async()=>{
   document.getElementById('googleLoginBtn').style.display='none';
   document.getElementById('loginLoading').style.display='block';
-  const provider=new firebase.auth.GoogleAuthProvider();
-  const isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  if(isMobile){auth.signInWithRedirect(provider)}
-  else{auth.signInWithPopup(provider).catch(e=>{
+  try{
+    await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+  }catch(e){
+    console.warn('Login error:',e);
     document.getElementById('googleLoginBtn').style.display='';
     document.getElementById('loginLoading').style.display='none';
-    if(e.code==='auth/popup-blocked'){auth.signInWithRedirect(provider)}
-    else{alert('ログインエラー: '+e.message)}
-  })}
+    if(e.code!=='auth/cancelled-popup-request'&&e.code!=='auth/popup-closed-by-user'){
+      alert('ログインエラー: '+e.message);
+    }
+  }
 });
 document.getElementById('logoutBtn').addEventListener('click',()=>{if(confirm('ログアウトしますか？'))auth.signOut()});
 
