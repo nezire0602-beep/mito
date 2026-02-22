@@ -415,6 +415,11 @@ const auth=firebase.auth(),db=firebase.firestore();
 let uid=null;
 
 // ===== Auth =====
+// Handle redirect result first
+auth.getRedirectResult().then(result=>{
+  if(result.user)console.log('Redirect login success:',result.user.displayName);
+}).catch(e=>console.warn('Redirect error:',e));
+
 document.getElementById('googleLoginBtn').addEventListener('click',()=>{
   const provider=new firebase.auth.GoogleAuthProvider();
   const isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
