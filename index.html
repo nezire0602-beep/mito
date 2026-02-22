@@ -10,6 +10,10 @@
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23fdf6ee'/%3E%3Cstop offset='50%25' stop-color='%23f5d6c3'/%3E%3Cstop offset='100%25' stop-color='%23e8a0b4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='180' height='180' rx='40' fill='url(%23bg)'/%3E%3Ctext x='90' y='120' text-anchor='middle' font-family='Georgia,serif' font-size='90' font-weight='bold' font-style='italic' fill='%236b3a4a'%3Em%3C/text%3E%3Ccircle cx='135' cy='38' r='14' fill='%23d4708a' opacity='.4'/%3E%3Ccircle cx='126' cy='30' r='8' fill='%23e8a0b4' opacity='.5'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+<!-- Firebase SDK (CDN) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
 :root{--warm:#fdf6ee;--cream:#faf3e8;--peach:#f5d6c3;--blush:#e8a0b4;--rose:#d4708a;--deep:#6b3a4a;--text:#4a3030;--text-light:#9a7a7a;--gold:#c8a46e;--gold-light:#e8d5b0;--tab-bg:#fff9f3}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -99,9 +103,44 @@ body{font-family:'Zen Maru Gothic',sans-serif;background:var(--warm);color:var(-
 .sleep-bar .filled{height:100%;border-radius:9px;background:linear-gradient(90deg,#7986cb,#9fa8da)}
 .sleep-hours-row{display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-light)}
 @media(min-width:600px){.hero{height:50dvh}.hero-name{font-size:4rem}.tab-btn{font-size:.8rem;padding:14px 14px 12px}.tab-content{padding:20px 24px 100px;max-width:640px;margin:0 auto}}
+/* Login screen */
+#loginScreen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;background:var(--warm);padding:24px;text-align:center}
+#loginScreen .login-logo{font-family:'Caveat',cursive;font-size:3.5rem;font-weight:600;color:var(--deep);margin-bottom:4px}
+#loginScreen .login-sub{font-size:1rem;color:var(--rose);letter-spacing:.3em;margin-bottom:24px}
+#loginScreen .login-desc{font-size:.82rem;color:var(--text-light);line-height:1.7;margin-bottom:32px}
+.google-btn{display:inline-flex;align-items:center;gap:10px;padding:12px 28px;border:1.5px solid rgba(200,164,110,.3);border-radius:28px;background:#fff;font-family:'Zen Maru Gothic',sans-serif;font-size:.9rem;font-weight:500;color:var(--text);cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(107,58,74,.08)}
+.google-btn:active{transform:scale(.97);box-shadow:0 1px 4px rgba(107,58,74,.12)}
+.google-btn svg{width:20px;height:20px}
+#appMain{display:none}
+.user-bar{display:flex;align-items:center;justify-content:flex-end;padding:4px 12px;background:var(--tab-bg);font-size:.65rem;color:var(--text-light);gap:8px;border-bottom:1px solid rgba(200,164,110,.08)}
+.user-bar img{width:20px;height:20px;border-radius:50%}
+.logout-btn{border:none;background:none;font-family:'Zen Maru Gothic',sans-serif;font-size:.65rem;color:var(--text-light);cursor:pointer;text-decoration:underline}
+.sync-indicator{font-size:.6rem;color:var(--rose);opacity:0;transition:opacity .3s}
+.sync-indicator.show{opacity:1}
 </style>
 </head>
 <body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-logo">mito</div>
+  <div class="login-sub">深 音</div>
+  <div class="login-desc">深音の育児記録アプリ。<br>ログインするとデータがクラウドに保存され、<br>どの端末からでもアクセスできます。</div>
+  <button class="google-btn" id="googleLoginBtn">
+    <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+    Googleでログイン
+  </button>
+</div>
+
+<!-- APP MAIN (hidden until login) -->
+<div id="appMain">
+
+<div class="user-bar">
+  <span class="sync-indicator" id="syncIndicator">同期中...</span>
+  <img id="userPhoto" src="" alt="" style="display:none">
+  <span id="userName"></span>
+  <button class="logout-btn" id="logoutBtn">ログアウト</button>
+</div>
 
 <div class="hero" id="heroSection">
   <img src="hero.jpg" alt="深音">
@@ -507,13 +546,11 @@ function renderSleep(){
 
 // ===== GROWTH =====
 let chartMode='weight';
-!function(){let d=load('mito_growth');if(!d.length){d.push({id:1,date:'2026-02-19',weight:BIRTH_W,height:BIRTH_H,head:null,memo:'出生時'});save('mito_growth',d)}}();
-document.getElementById('growthDate').value=todayStr();
-document.getElementById('growthSubmit').addEventListener('click',()=>{
+document.getElementById('growthSubmit').addEventListener('click',async()=>{
   const w=parseFloat(document.getElementById('growthWeightIn').value),h=parseFloat(document.getElementById('growthHeightIn').value);
   if(!w&&!h){alert('体重か身長を入力してください');return}
   const r={id:Date.now(),date:document.getElementById('growthDate').value||todayStr(),weight:w||null,height:h||null,head:parseFloat(document.getElementById('growthHeadIn').value)||null,memo:document.getElementById('growthMemo').value.trim()};
-  const d=load('mito_growth');d.push(r);d.sort((a,b)=>a.date.localeCompare(b.date));save('mito_growth',d);
+  const d=load('mito_growth');d.push(r);d.sort((a,b)=>a.date.localeCompare(b.date));await save('mito_growth',d);
   ['growthWeightIn','growthHeightIn','growthHeadIn'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('growthMemo').value='';document.getElementById('growthDate').value=todayStr();renderGrowth()});
 function switchChart(m){chartMode=m;document.getElementById('chartWeight').classList.toggle('active',m==='weight');document.getElementById('chartHeight').classList.toggle('active',m==='height');drawChart()}
@@ -544,10 +581,8 @@ function renderGrowth(){
   el.innerHTML=h;drawChart()}
 
 // ===== DELETE =====
-document.addEventListener('click',e=>{if(!e.target.classList.contains('log-delete'))return;if(!confirm('この記録を削除しますか？'))return;const k=e.target.dataset.key,id=parseInt(e.target.dataset.id);save(k,load(k).filter(r=>r.id!==id));({mito_milk:renderMilk,mito_diaper:renderDiaper,mito_temp:renderTemp,mito_sleep:renderSleep,mito_growth:renderGrowth})[k]()});
-
-// Init
-renderMilk();renderDiaper();renderTemp();renderSleep();renderGrowth();
+document.addEventListener('click',async e=>{if(!e.target.classList.contains('log-delete'))return;if(!confirm('この記録を削除しますか？'))return;const k=e.target.dataset.key,id=parseInt(e.target.dataset.id);await save(k,load(k).filter(r=>r.id!==id));({mito_milk:renderMilk,mito_diaper:renderDiaper,mito_temp:renderTemp,mito_sleep:renderSleep,mito_growth:renderGrowth})[k]()});
 </script>
+</div><!-- end appMain -->
 </body>
 </html>
