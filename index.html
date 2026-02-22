@@ -172,6 +172,15 @@ body{font-family:'Zen Maru Gothic',sans-serif;background:var(--warm);color:var(-
     <h3>深音のページへようこそ</h3>
     <p>授乳やおむつの記録、<br>体重・身長の成長記録を<br>ここにまとめていきます。</p>
   </div>
+  <div id="familySection" style="margin-top:20px;padding:16px;background:#fff;border-radius:14px;border:1px solid rgba(200,164,110,.12)">
+    <div style="font-size:.85rem;font-weight:700;color:var(--deep);margin-bottom:10px">家族共有</div>
+    <div id="familyStatus" style="font-size:.78rem;color:var(--text-light);margin-bottom:10px"></div>
+    <div id="familyInvite">
+      <input type="email" id="familyEmail" placeholder="家族のGmailアドレス" style="width:100%;padding:10px 12px;border:1.5px solid var(--gold-light);border-radius:10px;font-family:'Zen Maru Gothic',sans-serif;font-size:.82rem;box-sizing:border-box;margin-bottom:8px">
+      <button id="familyInviteBtn" style="width:100%;padding:10px;border:none;border-radius:10px;background:var(--blush);color:#fff;font-family:'Zen Maru Gothic',sans-serif;font-size:.82rem;font-weight:500;cursor:pointer">招待する</button>
+    </div>
+    <div id="familyMembers" style="margin-top:10px;font-size:.75rem;color:var(--text)"></div>
+  </div>
 </div>
 
 <!-- MILK -->
@@ -413,7 +422,7 @@ firebase.initializeApp({
   appId:"1:320050386670:web:b01701ad73c0b05518c5ff"
 });
 const auth=firebase.auth(),db=firebase.firestore();
-let uid=null;
+let uid=null,dataOwnerUid=null;
 
 // ===== Auth =====
 document.getElementById('googleLoginBtn').addEventListener('click',async()=>{
@@ -439,17 +448,75 @@ auth.onAuthStateChanged(async user=>{
     document.getElementById('appMain').style.display='block';
     if(user.photoURL){document.getElementById('userPhoto').src=user.photoURL;document.getElementById('userPhoto').style.display=''}
     document.getElementById('userName').textContent=user.displayName||'';
+    // Check if this user is a family member of someone
+    dataOwnerUid=uid;
+    try{
+      const memberDoc=await db.collection('familyMembers').doc(user.email).get();
+      if(memberDoc.exists&&memberDoc.data().ownerUid){
+        dataOwnerUid=memberDoc.data().ownerUid;
+        console.log('Family member mode: using owner data');
+      }
+    }catch(e){console.warn('Family check error:',e)}
+    // Save user profile
+    try{await db.collection('users').doc(uid).set({email:user.email,name:user.displayName,photo:user.photoURL},{merge:true})}catch(e){}
     await migrateLocalData();
     await initApp();
+    renderFamily();
   }else{
-    uid=null;
+    uid=null;dataOwnerUid=null;
     document.getElementById('loginScreen').style.display='flex';
     document.getElementById('appMain').style.display='none';
   }
 });
 
+// ===== Family Sharing =====
+document.getElementById('familyInviteBtn').addEventListener('click',async()=>{
+  const email=document.getElementById('familyEmail').value.trim().toLowerCase();
+  if(!email||!email.includes('@')){alert('メールアドレスを入力してください');return}
+  if(dataOwnerUid!==uid){alert('家族の招待はデータオーナーのみ可能です');return}
+  try{
+    await db.collection('familyMembers').doc(email).set({ownerUid:uid,ownerEmail:auth.currentUser.email,invitedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    // Also save to owner's family list
+    await db.collection('users').doc(uid).collection('family').doc(email).set({email:email,invitedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    document.getElementById('familyEmail').value='';
+    alert(email+' を招待しました！\nこのアドレスでログインすると同じデータが見れます。');
+    renderFamily();
+  }catch(e){alert('エラー: '+e.message)}
+});
+
+async function renderFamily(){
+  const sec=document.getElementById('familySection');
+  const status=document.getElementById('familyStatus');
+  const members=document.getElementById('familyMembers');
+  const invite=document.getElementById('familyInvite');
+  if(dataOwnerUid!==uid){
+    // This user is a family member
+    status.textContent='家族共有モード（データオーナーのデータを共有中）';
+    invite.style.display='none';
+    members.innerHTML='';
+  }else{
+    // This user is the owner
+    status.textContent='家族を招待すると、同じ記録を共有できます。';
+    invite.style.display='';
+    try{
+      const snap=await db.collection('users').doc(uid).collection('family').get();
+      if(snap.empty){members.innerHTML=''}
+      else{let h='<div style="margin-top:8px;font-weight:500">招待済み：</div>';snap.forEach(doc=>{h+='<div style="padding:4px 0;display:flex;align-items:center;justify-content:space-between">'+doc.id+'<button onclick="removeFamily(\''+doc.id+'\')" style="border:none;background:none;color:var(--rose);font-size:.7rem;cursor:pointer">削除</button></div>'});members.innerHTML=h}
+    }catch(e){members.innerHTML=''}
+  }
+}
+
+async function removeFamily(email){
+  if(!confirm(email+' の共有を解除しますか？'))return;
+  try{
+    await db.collection('familyMembers').doc(email).delete();
+    await db.collection('users').doc(uid).collection('family').doc(email).delete();
+    renderFamily();
+  }catch(e){alert('エラー: '+e.message)}
+}
+
 // ===== Firestore =====
-function userDoc(){return db.collection('users').doc(uid)}
+function userDoc(){return db.collection('users').doc(dataOwnerUid)}
 const KEYS=['mito_milk','mito_diaper','mito_temp','mito_sleep','mito_growth'];
 let cache={};KEYS.forEach(k=>cache[k]=[]);
 
