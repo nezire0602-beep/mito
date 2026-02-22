@@ -402,187 +402,137 @@ body{font-family:'Zen Maru Gothic',sans-serif;background:var(--warm);color:var(-
 </div>
 
 <script>
+// ===== Firebase Init =====
+firebase.initializeApp({
+  apiKey:"AIzaSyBWc0asofvf7_jHgxefL1t5WnMmnEad_5o",
+  authDomain:"mito-baby.firebaseapp.com",
+  projectId:"mito-baby",
+  storageBucket:"mito-baby.firebasestorage.app",
+  messagingSenderId:"320050386670",
+  appId:"1:320050386670:web:b01701ad73c0b05518c5ff"
+});
+const auth=firebase.auth(),db=firebase.firestore();
+let uid=null;
+
+// ===== Auth =====
+document.getElementById('googleLoginBtn').addEventListener('click',()=>{
+  const provider=new firebase.auth.GoogleAuthProvider();
+  const isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  if(isMobile){auth.signInWithRedirect(provider)}
+  else{auth.signInWithPopup(provider).catch(e=>{
+    if(e.code==='auth/popup-blocked'){auth.signInWithRedirect(provider)}
+    else{alert('ログインエラー: '+e.message)}
+  })}
+});
+document.getElementById('logoutBtn').addEventListener('click',()=>{if(confirm('ログアウトしますか？'))auth.signOut()});
+
+auth.onAuthStateChanged(async user=>{
+  if(user){
+    uid=user.uid;
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('appMain').style.display='block';
+    if(user.photoURL){document.getElementById('userPhoto').src=user.photoURL;document.getElementById('userPhoto').style.display=''}
+    document.getElementById('userName').textContent=user.displayName||'';
+    await migrateLocalData();
+    await initApp();
+  }else{
+    uid=null;
+    document.getElementById('loginScreen').style.display='flex';
+    document.getElementById('appMain').style.display='none';
+  }
+});
+
+// ===== Firestore =====
+function userDoc(){return db.collection('users').doc(uid)}
+const KEYS=['mito_milk','mito_diaper','mito_temp','mito_sleep','mito_growth'];
+let cache={};KEYS.forEach(k=>cache[k]=[]);
+
+function load(k){return cache[k]||[]}
+async function save(k,d){
+  cache[k]=d;
+  try{localStorage.setItem(k,JSON.stringify(d))}catch{}
+  if(!uid)return;showSync();
+  try{await userDoc().collection('data').doc(k).set({items:d,updated:firebase.firestore.FieldValue.serverTimestamp()})}catch(e){console.warn('Save error:',e)}
+  hideSync();
+}
+async function loadAll(){
+  if(!uid)return;showSync();
+  try{const snap=await userDoc().collection('data').get();snap.forEach(doc=>{if(KEYS.includes(doc.id)&&doc.data().items)cache[doc.id]=doc.data().items})}
+  catch(e){console.warn('Load error:',e);KEYS.forEach(k=>{try{cache[k]=JSON.parse(localStorage.getItem(k))||[]}catch{cache[k]=[]}})}
+  hideSync();
+}
+function showSync(){document.getElementById('syncIndicator').classList.add('show')}
+function hideSync(){setTimeout(()=>document.getElementById('syncIndicator').classList.remove('show'),500)}
+
+async function migrateLocalData(){
+  for(const k of KEYS){try{
+    const local=JSON.parse(localStorage.getItem(k))||[];if(!local.length)continue;
+    const doc=await userDoc().collection('data').doc(k).get();
+    if(doc.exists&&doc.data().items&&doc.data().items.length>0){
+      const existing=new Set(doc.data().items.map(r=>r.id));
+      const nr=local.filter(r=>!existing.has(r.id));
+      if(nr.length){const m=[...doc.data().items,...nr];m.sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.time||'').localeCompare(a.time||''));
+      await userDoc().collection('data').doc(k).set({items:m,updated:firebase.firestore.FieldValue.serverTimestamp()})}
+    }else{await userDoc().collection('data').doc(k).set({items:local,updated:firebase.firestore.FieldValue.serverTimestamp()})}
+  }catch(e){console.warn('Migrate:',e)}}
+}
+
+// ===== App =====
 const BIRTH=new Date(2026,1,19),BIRTH_W=3054,BIRTH_H=50.5;
 const todayStr=()=>new Date().toISOString().slice(0,10);
 const nowTime=()=>{const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
-function load(k){try{return JSON.parse(localStorage.getItem(k))||[]}catch{return[]}}
-function save(k,d){localStorage.setItem(k,JSON.stringify(d))}
 function daysSince(dateStr){return Math.floor((new Date(dateStr)-BIRTH)/864e5)+1}
 
-// Days count
-document.getElementById('daysCount').textContent='生後 '+(Math.floor((new Date()-BIRTH)/864e5)+1)+' 日目';
+async function initApp(){
+  await loadAll();
+  document.getElementById('daysCount').textContent='生後 '+(Math.floor((new Date()-BIRTH)/864e5)+1)+' 日目';
+  let gd=load('mito_growth');if(!gd.length){gd.push({id:1,date:'2026-02-19',weight:BIRTH_W,height:BIRTH_H,head:null,memo:'出生時'});await save('mito_growth',gd)}
+  document.getElementById('milkTime').value=nowTime();document.getElementById('diaperTime').value=nowTime();
+  document.getElementById('tempTime').value=nowTime();document.getElementById('sleepTime').value=nowTime();
+  document.getElementById('growthDate').value=todayStr();
+  renderMilk();renderDiaper();renderTemp();renderSleep();renderGrowth();
+}
 
-// Tabs
 const heroEl=document.getElementById('heroSection');
-document.querySelectorAll('.tab-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    const t=btn.dataset.tab;
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('.tab-content').forEach(c=>{c.classList.remove('active');if(c.id==='tab-'+t)c.classList.add('active')});
-    heroEl.style.display=t==='home'?'':'none';
-    if(t!=='home')window.scrollTo(0,0);
-    if(t==='growth')setTimeout(drawChart,50);
-  });
-});
-
+document.querySelectorAll('.tab-btn').forEach(btn=>{btn.addEventListener('click',()=>{const t=btn.dataset.tab;document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.tab-content').forEach(c=>{c.classList.remove('active');if(c.id==='tab-'+t)c.classList.add('active')});heroEl.style.display=t==='home'?'':'none';if(t!=='home')window.scrollTo(0,0);if(t==='growth')setTimeout(drawChart,50)})});
 function setupGroup(id,cb){const el=document.getElementById(id);if(!el)return;el.querySelectorAll('.type-btn').forEach(b=>b.addEventListener('click',()=>{el.querySelectorAll('.type-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');if(cb)cb(b.dataset.val)}))}
 
-// ===== MILK =====
+// MILK
 let milkSide=null;
 setupGroup('milkType',v=>{document.getElementById('breastFields').classList.toggle('show',v==='breast'||v==='mixed');document.getElementById('formulaFields').classList.toggle('show',v==='formula'||v==='mixed');document.getElementById('milkSubmit').disabled=false});
 document.querySelectorAll('#breastFields .side-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#breastFields .side-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');milkSide=b.dataset.side}));
-document.getElementById('milkTime').value=nowTime();
-document.getElementById('milkSubmit').addEventListener('click',()=>{
-  const te=document.querySelector('#milkType .type-btn.active');if(!te)return;
-  const r={id:Date.now(),date:todayStr(),time:document.getElementById('milkTime').value||nowTime(),type:te.dataset.val,leftMin:parseInt(document.getElementById('breastLeftMin').value)||0,rightMin:parseInt(document.getElementById('breastRightMin').value)||0,side:milkSide,formulaMl:parseInt(document.getElementById('formulaMl').value)||0,memo:document.getElementById('milkMemo').value.trim()};
-  const d=load('mito_milk');d.unshift(r);save('mito_milk',d);
-  document.querySelectorAll('#milkType .type-btn,#breastFields .side-btn').forEach(b=>b.classList.remove('active'));
-  ['breastFields','formulaFields'].forEach(id=>document.getElementById(id).classList.remove('show'));
-  ['breastLeftMin','breastRightMin','formulaMl'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('milkMemo').value='';document.getElementById('milkTime').value=nowTime();document.getElementById('milkSubmit').disabled=true;milkSide=null;renderMilk()});
-function renderMilk(){
-  const data=load('mito_milk'),today=todayStr(),td=data.filter(r=>r.date===today);
-  document.getElementById('milkCountToday').textContent=td.length;
-  document.getElementById('milkBreastMin').textContent=td.reduce((s,r)=>s+(r.leftMin||0)+(r.rightMin||0),0);
-  document.getElementById('milkFormulaMl').textContent=td.reduce((s,r)=>s+(r.formulaMl||0),0);
-  document.getElementById('milkLastTime').textContent=td.length?td[0].time:'--:--';
-  const el=document.getElementById('milkLog');if(!data.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-light);font-size:.8rem">まだ記録がありません</div>';return}
-  const TL={breast:'母乳',formula:'ミルク',mixed:'混合'},SL={left:'左',right:'右',both:'両方'};
-  let h='',ld='';
-  data.forEach(r=>{if(r.date!==ld){h+='<div class="log-date-header">'+r.date.replace(/-/g,'/')+'（生後'+daysSince(r.date)+'日）</div>';ld=r.date}let det=TL[r.type]||'';if(r.type==='breast'||r.type==='mixed'){const p=[];if(r.side)p.push(SL[r.side]||'');if(r.leftMin)p.push('左'+r.leftMin+'分');if(r.rightMin)p.push('右'+r.rightMin+'分');if(p.length)det+=' '+p.join(' / ')}if((r.type==='formula'||r.type==='mixed')&&r.formulaMl)det+=' '+r.formulaMl+'ml';h+='<div class="log-item"><div class="log-time">'+r.time+'</div><div class="log-body"><span class="log-badge '+r.type+'">'+(TL[r.type]||'')+'</span> <span class="log-detail">'+det+'</span>'+(r.memo?'<div class="log-memo">'+r.memo+'</div>':'')+'</div><button class="log-delete" data-key="mito_milk" data-id="'+r.id+'">&#10005;</button></div>'});
-  el.innerHTML=h}
+document.getElementById('milkSubmit').addEventListener('click',async()=>{const te=document.querySelector('#milkType .type-btn.active');if(!te)return;const r={id:Date.now(),date:todayStr(),time:document.getElementById('milkTime').value||nowTime(),type:te.dataset.val,leftMin:parseInt(document.getElementById('breastLeftMin').value)||0,rightMin:parseInt(document.getElementById('breastRightMin').value)||0,side:milkSide,formulaMl:parseInt(document.getElementById('formulaMl').value)||0,memo:document.getElementById('milkMemo').value.trim()};const d=load('mito_milk');d.unshift(r);await save('mito_milk',d);document.querySelectorAll('#milkType .type-btn,#breastFields .side-btn').forEach(b=>b.classList.remove('active'));['breastFields','formulaFields'].forEach(id=>document.getElementById(id).classList.remove('show'));['breastLeftMin','breastRightMin','formulaMl'].forEach(id=>document.getElementById(id).value='');document.getElementById('milkMemo').value='';document.getElementById('milkTime').value=nowTime();document.getElementById('milkSubmit').disabled=true;milkSide=null;renderMilk()});
+function renderMilk(){const data=load('mito_milk'),today=todayStr(),td=data.filter(r=>r.date===today);document.getElementById('milkCountToday').textContent=td.length;document.getElementById('milkBreastMin').textContent=td.reduce((s,r)=>s+(r.leftMin||0)+(r.rightMin||0),0);document.getElementById('milkFormulaMl').textContent=td.reduce((s,r)=>s+(r.formulaMl||0),0);document.getElementById('milkLastTime').textContent=td.length?td[0].time:'--:--';const el=document.getElementById('milkLog');if(!data.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-light);font-size:.8rem">まだ記録がありません</div>';return}const TL={breast:'母乳',formula:'ミルク',mixed:'混合'},SL={left:'左',right:'右',both:'両方'};let h='',ld='';data.forEach(r=>{if(r.date!==ld){h+='<div class="log-date-header">'+r.date.replace(/-/g,'/')+'（生後'+daysSince(r.date)+'日）</div>';ld=r.date}let det=TL[r.type]||'';if(r.type==='breast'||r.type==='mixed'){const p=[];if(r.side)p.push(SL[r.side]||'');if(r.leftMin)p.push('左'+r.leftMin+'分');if(r.rightMin)p.push('右'+r.rightMin+'分');if(p.length)det+=' '+p.join(' / ')}if((r.type==='formula'||r.type==='mixed')&&r.formulaMl)det+=' '+r.formulaMl+'ml';h+='<div class="log-item"><div class="log-time">'+r.time+'</div><div class="log-body"><span class="log-badge '+r.type+'">'+(TL[r.type]||'')+'</span> <span class="log-detail">'+det+'</span>'+(r.memo?'<div class="log-memo">'+r.memo+'</div>':'')+'</div><button class="log-delete" data-key="mito_milk" data-id="'+r.id+'">&#10005;</button></div>'});el.innerHTML=h}
 
-// ===== DIAPER =====
+// DIAPER
 let dpState=null,dpColor=null;
 setupGroup('diaperType',v=>{const sp=v==='poop'||v==='both';document.getElementById('poopFields').classList.toggle('show',sp);document.getElementById('poopColorField').classList.toggle('show',sp);document.getElementById('diaperSubmit').disabled=false});
 setupGroup('poopState',v=>{dpState=v});setupGroup('poopColor',v=>{dpColor=v});
-document.getElementById('diaperTime').value=nowTime();
-document.getElementById('diaperSubmit').addEventListener('click',()=>{
-  const te=document.querySelector('#diaperType .type-btn.active');if(!te)return;
-  const r={id:Date.now(),date:todayStr(),time:document.getElementById('diaperTime').value||nowTime(),type:te.dataset.val,poopState:dpState,poopColor:dpColor,memo:document.getElementById('diaperMemo').value.trim()};
-  const d=load('mito_diaper');d.unshift(r);save('mito_diaper',d);
-  document.querySelectorAll('#diaperType .type-btn,#poopState .type-btn,#poopColor .type-btn').forEach(b=>b.classList.remove('active'));
-  ['poopFields','poopColorField'].forEach(id=>document.getElementById(id).classList.remove('show'));
-  document.getElementById('diaperMemo').value='';document.getElementById('diaperTime').value=nowTime();document.getElementById('diaperSubmit').disabled=true;dpState=null;dpColor=null;renderDiaper()});
-function renderDiaper(){
-  const data=load('mito_diaper'),today=todayStr(),td=data.filter(r=>r.date===today);
-  document.getElementById('diaperCountToday').textContent=td.length;
-  document.getElementById('diaperPeeCount').textContent=td.filter(r=>r.type==='pee'||r.type==='both').length;
-  document.getElementById('diaperPoopCount').textContent=td.filter(r=>r.type==='poop'||r.type==='both').length;
-  document.getElementById('diaperLastTime').textContent=td.length?td[0].time:'--:--';
-  const el=document.getElementById('diaperLog');if(!data.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-light);font-size:.8rem">まだ記録がありません</div>';return}
-  const TL={pee:'おしっこ',poop:'うんち',both:'両方'},STL={normal:'普通',soft:'ゆるめ',hard:'硬め',watery:'水っぽい'},CL={yellow:'黄色',green:'緑',dark:'黒緑',other:'その他'};
-  let h='',ld='';
-  data.forEach(r=>{if(r.date!==ld){h+='<div class="log-date-header">'+r.date.replace(/-/g,'/')+'（生後'+daysSince(r.date)+'日）</div>';ld=r.date}let det='';if(r.poopState)det+=STL[r.poopState]||'';if(r.poopColor)det+=(det?' / ':'')+(CL[r.poopColor]||'');h+='<div class="log-item"><div class="log-time">'+r.time+'</div><div class="log-body"><span class="log-badge '+r.type+'">'+(TL[r.type]||'')+'</span> '+(det?'<span class="log-detail">'+det+'</span>':'')+(r.memo?'<div class="log-memo">'+r.memo+'</div>':'')+'</div><button class="log-delete" data-key="mito_diaper" data-id="'+r.id+'">&#10005;</button></div>'});
-  el.innerHTML=h}
+document.getElementById('diaperSubmit').addEventListener('click',async()=>{const te=document.querySelector('#diaperType .type-btn.active');if(!te)return;const r={id:Date.now(),date:todayStr(),time:document.getElementById('diaperTime').value||nowTime(),type:te.dataset.val,poopState:dpState,poopColor:dpColor,memo:document.getElementById('diaperMemo').value.trim()};const d=load('mito_diaper');d.unshift(r);await save('mito_diaper',d);document.querySelectorAll('#diaperType .type-btn,#poopState .type-btn,#poopColor .type-btn').forEach(b=>b.classList.remove('active'));['poopFields','poopColorField'].forEach(id=>document.getElementById(id).classList.remove('show'));document.getElementById('diaperMemo').value='';document.getElementById('diaperTime').value=nowTime();document.getElementById('diaperSubmit').disabled=true;dpState=null;dpColor=null;renderDiaper()});
+function renderDiaper(){const data=load('mito_diaper'),today=todayStr(),td=data.filter(r=>r.date===today);document.getElementById('diaperCountToday').textContent=td.length;document.getElementById('diaperPeeCount').textContent=td.filter(r=>r.type==='pee'||r.type==='both').length;document.getElementById('diaperPoopCount').textContent=td.filter(r=>r.type==='poop'||r.type==='both').length;document.getElementById('diaperLastTime').textContent=td.length?td[0].time:'--:--';const el=document.getElementById('diaperLog');if(!data.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-light);font-size:.8rem">まだ記録がありません</div>';return}const TL={pee:'おしっこ',poop:'うんち',both:'両方'},STL={normal:'普通',soft:'ゆるめ',hard:'硬め',watery:'水っぽい'},CL={yellow:'黄色',green:'緑',dark:'黒緑',other:'その他'};let h='',ld='';data.forEach(r=>{if(r.date!==ld){h+='<div class="log-date-header">'+r.date.replace(/-/g,'/')+'（生後'+daysSince(r.date)+'日）</div>';ld=r.date}let det='';if(r.poopState)det+=STL[r.poopState]||'';if(r.poopColor)det+=(det?' / ':'')+(CL[r.poopColor]||'');h+='<div class="log-item"><div class="log-time">'+r.time+'</div><div class="log-body"><span class="log-badge '+r.type+'">'+(TL[r.type]||'')+'</span> '+(det?'<span class="log-detail">'+det+'</span>':'')+(r.memo?'<div class="log-memo">'+r.memo+'</div>':'')+'</div><button class="log-delete" data-key="mito_diaper" data-id="'+r.id+'">&#10005;</button></div>'});el.innerHTML=h}
 
-// ===== TEMP =====
-let tempSite='armpit';
-setupGroup('tempSite',v=>{tempSite=v});
-document.getElementById('tempTime').value=nowTime();
-document.getElementById('tempSubmit').addEventListener('click',()=>{
-  const v=parseFloat(document.getElementById('tempValue').value);if(!v||v<34||v>42){alert('体温を入力してください');return}
-  const r={id:Date.now(),date:todayStr(),time:document.getElementById('tempTime').value||nowTime(),temp:v,site:tempSite,memo:document.getElementById('tempMemo').value.trim()};
-  const d=load('mito_temp');d.unshift(r);save('mito_temp',d);
-  document.getElementById('tempValue').value='';document.getElementById('tempMemo').value='';document.getElementById('tempTime').value=nowTime();renderTemp()});
-function renderTemp(){
-  const data=load('mito_temp'),today=todayStr(),td=data.filter(r=>r.date===today);
-  document.getElementById('tempCount').textContent=td.length;
-  const temps=td.map(r=>r.temp).filter(Boolean);
-  document.getElementById('tempLatest').textContent=td.length?td[0].temp.toFixed(1):'--.-';
-  document.getElementById('tempHigh').textContent=temps.length?Math.max(...temps).toFixed(1):'--.-';
-  document.getElementById('tempLow').textContent=temps.length?Math.min(...temps).toFixed(1):'--.-';
-  const el=document.getElementById('tempLog');if(!data.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-light);font-size:.8rem">まだ記録がありません</div>';return}
-  const SITE={armpit:'脇',ear:'耳',forehead:'おでこ'};
-  let h='',ld='';
-  data.forEach(r=>{if(r.date!==ld){h+='<div class="log-date-header">'+r.date.replace(/-/g,'/')+'（生後'+daysSince(r.date)+'日）</div>';ld=r.date}
-  const cls=r.temp>=37.5?'temp-high':r.temp<36.0?'temp-low':'temp-normal';
-  h+='<div class="log-item"><div class="log-time">'+r.time+'</div><div class="log-body"><span class="log-badge '+cls+'">'+r.temp.toFixed(1)+'&#8451;</span> <span class="log-detail">'+(SITE[r.site]||'')+'</span>'+(r.memo?'<div class="log-memo">'+r.memo+'</div>':'')+'</div><button class="log-delete" data-key="mito_temp" data-id="'+r.id+'">&#10005;</button></div>'});
-  el.innerHTML=h}
+// TEMP
+let tempSite='armpit';setupGroup('tempSite',v=>{tempSite=v});
+document.getElementById('tempSubmit').addEventListener('click',async()=>{const v=parseFloat(document.getElementById('tempValue').value);if(!v||v<34||v>42){alert('体温を入力してください');return}const r={id:Date.now(),date:todayStr(),time:document.getElementById('tempTime').value||nowTime(),temp:v,site:tempSite,memo:document.getElementById('tempMemo').value.trim()};const d=load('mito_temp');d.unshift(r);await save('mito_temp',d);document.getElementById('tempValue').value='';document.getElementById('tempMemo').value='';document.getElementById('tempTime').value=nowTime();renderTemp()});
+function renderTemp(){const data=load('mito_temp'),today=todayStr(),td=data.filter(r=>r.date===today);document.getElementById('tempCount').textContent=td.length;const temps=td.map(r=>r.temp).filter(Boolean);document.getElementById('tempLatest').textContent=td.length?td[0].temp.toFixed(1):'--.-';document.getElementById('tempHigh').textContent=temps.length?Math.max(...temps).toFixed(1):'--.-';document.getElementById('tempLow').textContent=temps.length?Math.min(...temps).toFixed(1):'--.-';const el=document.getElementById('tempLog');if(!data.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-light);font-size:.8rem">まだ記録がありません</div>';return}const SITE={armpit:'脇',ear:'耳',forehead:'おでこ'};let h='',ld='';data.forEach(r=>{if(r.date!==ld){h+='<div class="log-date-header">'+r.date.replace(/-/g,'/')+'（生後'+daysSince(r.date)+'日）</div>';ld=r.date}const cls=r.temp>=37.5?'temp-high':r.temp<36.0?'temp-low':'temp-normal';h+='<div class="log-item"><div class="log-time">'+r.time+'</div><div class="log-body"><span class="log-badge '+cls+'">'+r.temp.toFixed(1)+'&#8451;</span> <span class="log-detail">'+(SITE[r.site]||'')+'</span>'+(r.memo?'<div class="log-memo">'+r.memo+'</div>':'')+'</div><button class="log-delete" data-key="mito_temp" data-id="'+r.id+'">&#10005;</button></div>'});el.innerHTML=h}
 
-// ===== SLEEP =====
+// SLEEP
 setupGroup('sleepType',()=>{document.getElementById('sleepSubmit').disabled=false});
-document.getElementById('sleepTime').value=nowTime();
-
-function addSleepRecord(type,time,memo){
-  const r={id:Date.now(),date:todayStr(),time:time||nowTime(),type:type,memo:memo||''};
-  const d=load('mito_sleep');d.unshift(r);save('mito_sleep',d);renderSleep()}
-
+async function addSleepRecord(type,time,memo){const r={id:Date.now(),date:todayStr(),time:time||nowTime(),type:type,memo:memo||''};const d=load('mito_sleep');d.unshift(r);await save('mito_sleep',d);renderSleep()}
 document.getElementById('sleepStartBtn').addEventListener('click',()=>addSleepRecord('start',nowTime(),''));
 document.getElementById('sleepEndBtn').addEventListener('click',()=>addSleepRecord('end',nowTime(),''));
-document.getElementById('sleepSubmit').addEventListener('click',()=>{
-  const te=document.querySelector('#sleepType .type-btn.active');if(!te)return;
-  addSleepRecord(te.dataset.val,document.getElementById('sleepTime').value,document.getElementById('sleepMemo').value.trim());
-  document.querySelectorAll('#sleepType .type-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('sleepMemo').value='';document.getElementById('sleepTime').value=nowTime();document.getElementById('sleepSubmit').disabled=true});
+document.getElementById('sleepSubmit').addEventListener('click',()=>{const te=document.querySelector('#sleepType .type-btn.active');if(!te)return;addSleepRecord(te.dataset.val,document.getElementById('sleepTime').value,document.getElementById('sleepMemo').value.trim());document.querySelectorAll('#sleepType .type-btn').forEach(b=>b.classList.remove('active'));document.getElementById('sleepMemo').value='';document.getElementById('sleepTime').value=nowTime();document.getElementById('sleepSubmit').disabled=true});
+function renderSleep(){const data=load('mito_sleep'),today=todayStr(),td=data.filter(r=>r.date===today);const sorted=[...td].sort((a,b)=>a.time.localeCompare(b.time));let totalMin=0,sleeping=false,sleepStart='';sorted.forEach(r=>{if(r.type==='start'){sleeping=true;sleepStart=r.time}else if(r.type==='end'&&sleeping){const[sh,sm]=sleepStart.split(':').map(Number);const[eh,em]=r.time.split(':').map(Number);totalMin+=(eh*60+em)-(sh*60+sm);sleeping=false}});if(sleeping){const[sh,sm]=sleepStart.split(':').map(Number);const n=new Date();totalMin+=(n.getHours()*60+n.getMinutes())-(sh*60+sm)}const hrs=Math.floor(totalMin/60),mins=totalMin%60;document.getElementById('sleepTotal').textContent=hrs+'h'+mins+'m';document.getElementById('sleepCount').textContent=sorted.filter(r=>r.type==='start').length;const latest=td.length?td[0]:null;document.getElementById('sleepStatus').textContent=latest?(latest.type==='start'?'睡眠中':'起きてる'):'--';if(totalMin>0){document.getElementById('sleepBarFill').style.width=Math.min((totalMin/(24*60))*100,100)+'%'}else{document.getElementById('sleepBarFill').style.width='0%'}const el=document.getElementById('sleepLog');if(!data.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-light);font-size:.8rem">まだ記録がありません</div>';return}const TL={start:'寝た',end:'起きた'};let h='',ld='';data.forEach(r=>{if(r.date!==ld){h+='<div class="log-date-header">'+r.date.replace(/-/g,'/')+'（生後'+daysSince(r.date)+'日）</div>';ld=r.date}h+='<div class="log-item"><div class="log-time">'+r.time+'</div><div class="log-body"><span class="log-badge sleep-'+r.type+'">'+(TL[r.type]||'')+'</span>'+(r.memo?' <span class="log-detail">'+r.memo+'</span>':'')+'</div><button class="log-delete" data-key="mito_sleep" data-id="'+r.id+'">&#10005;</button></div>'});el.innerHTML=h}
 
-function renderSleep(){
-  const data=load('mito_sleep'),today=todayStr(),td=data.filter(r=>r.date===today);
-  // Calculate total sleep
-  const sorted=[...td].sort((a,b)=>a.time.localeCompare(b.time));
-  let totalMin=0,sleeping=false,sleepStart='';
-  sorted.forEach(r=>{if(r.type==='start'){sleeping=true;sleepStart=r.time}else if(r.type==='end'&&sleeping){const[sh,sm]=sleepStart.split(':').map(Number);const[eh,em]=r.time.split(':').map(Number);totalMin+=(eh*60+em)-(sh*60+sm);sleeping=false}});
-  // If still sleeping, count until now
-  if(sleeping){const[sh,sm]=sleepStart.split(':').map(Number);const n=new Date();totalMin+=(n.getHours()*60+n.getMinutes())-(sh*60+sm)}
-  const hrs=Math.floor(totalMin/60),mins=totalMin%60;
-  document.getElementById('sleepTotal').textContent=hrs+'h'+mins+'m';
-  document.getElementById('sleepCount').textContent=sorted.filter(r=>r.type==='start').length;
-  // Current status
-  const latest=td.length?td[0]:null;
-  document.getElementById('sleepStatus').textContent=latest?(latest.type==='start'?'睡眠中':'起きてる'):'--';
-
-  // Timeline bar
-  const bar=document.getElementById('sleepTimeline');
-  if(totalMin>0){const pct=Math.min((totalMin/(24*60))*100,100);document.getElementById('sleepBarFill').style.width=pct+'%'}else{document.getElementById('sleepBarFill').style.width='0%'}
-
-  // Log
-  const el=document.getElementById('sleepLog');if(!data.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-light);font-size:.8rem">まだ記録がありません</div>';return}
-  const TL={start:'寝た',end:'起きた'};
-  let h='',ld='';
-  data.forEach(r=>{if(r.date!==ld){h+='<div class="log-date-header">'+r.date.replace(/-/g,'/')+'（生後'+daysSince(r.date)+'日）</div>';ld=r.date}
-  h+='<div class="log-item"><div class="log-time">'+r.time+'</div><div class="log-body"><span class="log-badge sleep-'+r.type+'">'+(TL[r.type]||'')+'</span>'+(r.memo?' <span class="log-detail">'+r.memo+'</span>':'')+'</div><button class="log-delete" data-key="mito_sleep" data-id="'+r.id+'">&#10005;</button></div>'});
-  el.innerHTML=h}
-
-// ===== GROWTH =====
+// GROWTH
 let chartMode='weight';
-document.getElementById('growthSubmit').addEventListener('click',async()=>{
-  const w=parseFloat(document.getElementById('growthWeightIn').value),h=parseFloat(document.getElementById('growthHeightIn').value);
-  if(!w&&!h){alert('体重か身長を入力してください');return}
-  const r={id:Date.now(),date:document.getElementById('growthDate').value||todayStr(),weight:w||null,height:h||null,head:parseFloat(document.getElementById('growthHeadIn').value)||null,memo:document.getElementById('growthMemo').value.trim()};
-  const d=load('mito_growth');d.push(r);d.sort((a,b)=>a.date.localeCompare(b.date));await save('mito_growth',d);
-  ['growthWeightIn','growthHeightIn','growthHeadIn'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('growthMemo').value='';document.getElementById('growthDate').value=todayStr();renderGrowth()});
+document.getElementById('growthSubmit').addEventListener('click',async()=>{const w=parseFloat(document.getElementById('growthWeightIn').value),h=parseFloat(document.getElementById('growthHeightIn').value);if(!w&&!h){alert('体重か身長を入力してください');return}const r={id:Date.now(),date:document.getElementById('growthDate').value||todayStr(),weight:w||null,height:h||null,head:parseFloat(document.getElementById('growthHeadIn').value)||null,memo:document.getElementById('growthMemo').value.trim()};const d=load('mito_growth');d.push(r);d.sort((a,b)=>a.date.localeCompare(b.date));await save('mito_growth',d);['growthWeightIn','growthHeightIn','growthHeadIn'].forEach(id=>document.getElementById(id).value='');document.getElementById('growthMemo').value='';document.getElementById('growthDate').value=todayStr();renderGrowth()});
 function switchChart(m){chartMode=m;document.getElementById('chartWeight').classList.toggle('active',m==='weight');document.getElementById('chartHeight').classList.toggle('active',m==='height');drawChart()}
-function drawChart(){
-  const canvas=document.getElementById('growthChart'),ctx=canvas.getContext('2d'),dpr=window.devicePixelRatio||1,rect=canvas.getBoundingClientRect();
-  canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;ctx.scale(dpr,dpr);
-  const W=rect.width,H=rect.height;ctx.clearRect(0,0,W,H);
-  const data=load('mito_growth').filter(r=>chartMode==='weight'?r.weight:r.height);
-  if(data.length<1){ctx.fillStyle='#9a7a7a';ctx.font='13px "Zen Maru Gothic"';ctx.fillText('データがありません',W/2-60,H/2);return}
-  const vals=data.map(r=>chartMode==='weight'?r.weight:r.height);
-  const minV=Math.min(...vals)*.95,maxV=Math.max(...vals)*1.05;
-  const pL=50,pR=16,pT=20,pB=36,cw=W-pL-pR,ch=H-pT-pB;
-  ctx.strokeStyle='rgba(200,164,110,.15)';ctx.lineWidth=.5;
-  for(let i=0;i<=4;i++){const y=pT+(ch/4)*i;ctx.beginPath();ctx.moveTo(pL,y);ctx.lineTo(W-pR,y);ctx.stroke();const v=maxV-(maxV-minV)*(i/4);ctx.fillStyle='#9a7a7a';ctx.font='10px "Zen Maru Gothic"';ctx.textAlign='right';ctx.fillText(chartMode==='weight'?Math.round(v)+'g':v.toFixed(1)+'cm',pL-6,y+4)}
-  if(data.length===1){const x=pL+cw/2,y=pT+ch/2;ctx.fillStyle='#d4708a';ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#4a3030';ctx.font='10px "Zen Maru Gothic"';ctx.textAlign='center';ctx.fillText(vals[0]+(chartMode==='weight'?'g':'cm'),x,y-10);ctx.fillText(data[0].date.slice(5).replace('-','/'),x,H-8);return}
-  ctx.strokeStyle='#d4708a';ctx.lineWidth=2;ctx.lineJoin='round';ctx.beginPath();
-  data.forEach((r,i)=>{const x=pL+(cw/(data.length-1))*i,v=chartMode==='weight'?r.weight:r.height,y=pT+ch-((v-minV)/(maxV-minV))*ch;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});
-  ctx.stroke();ctx.globalAlpha=.08;ctx.fillStyle='#d4708a';ctx.lineTo(pL+cw,pT+ch);ctx.lineTo(pL,pT+ch);ctx.fill();ctx.globalAlpha=1;
-  data.forEach((r,i)=>{const x=pL+(cw/(data.length-1))*i,v=chartMode==='weight'?r.weight:r.height,y=pT+ch-((v-minV)/(maxV-minV))*ch;ctx.fillStyle='#d4708a';ctx.beginPath();ctx.arc(x,y,3.5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#9a7a7a';ctx.font='9px "Zen Maru Gothic"';ctx.textAlign='center';const show=data.length<=10||i%Math.ceil(data.length/8)===0||i===data.length-1;if(show)ctx.fillText(r.date.slice(5).replace('-','/'),x,H-8)})}
-function renderGrowth(){
-  const data=load('mito_growth'),latest=data.length?data[data.length-1]:null;
-  document.getElementById('growthWeight').textContent=latest&&latest.weight?latest.weight:'--';
-  document.getElementById('growthHeight').textContent=latest&&latest.height?latest.height:'--';
-  document.getElementById('growthHead').textContent=latest&&latest.head?latest.head:'--';
-  if(latest&&latest.weight){const diff=latest.weight-BIRTH_W;document.getElementById('growthDiff').textContent=(diff>=0?'+':'')+diff}else{document.getElementById('growthDiff').textContent='--'}
-  const el=document.getElementById('growthLog');if(!data.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-light);font-size:.8rem">まだ記録がありません</div>';drawChart();return}
-  let h='';[...data].reverse().forEach(r=>{let det='';if(r.weight)det+=r.weight+'g';if(r.height)det+=(det?' / ':'')+r.height+'cm';if(r.head)det+=(det?' / ':'')+'頭囲'+r.head+'cm';h+='<div class="log-item"><div class="log-time">'+r.date.slice(5).replace('-','/')+'</div><div class="log-body"><span class="log-detail">生後'+daysSince(r.date)+'日　'+det+'</span>'+(r.memo?'<div class="log-memo">'+r.memo+'</div>':'')+'</div>'+(r.id!==1?'<button class="log-delete" data-key="mito_growth" data-id="'+r.id+'">&#10005;</button>':'')+'</div>'});
-  el.innerHTML=h;drawChart()}
+function drawChart(){const canvas=document.getElementById('growthChart'),ctx=canvas.getContext('2d'),dpr=window.devicePixelRatio||1,rect=canvas.getBoundingClientRect();canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;ctx.scale(dpr,dpr);const W=rect.width,H=rect.height;ctx.clearRect(0,0,W,H);const data=load('mito_growth').filter(r=>chartMode==='weight'?r.weight:r.height);if(data.length<1){ctx.fillStyle='#9a7a7a';ctx.font='13px "Zen Maru Gothic"';ctx.fillText('データがありません',W/2-60,H/2);return}const vals=data.map(r=>chartMode==='weight'?r.weight:r.height);const minV=Math.min(...vals)*.95,maxV=Math.max(...vals)*1.05;const pL=50,pR=16,pT=20,pB=36,cw=W-pL-pR,ch=H-pT-pB;ctx.strokeStyle='rgba(200,164,110,.15)';ctx.lineWidth=.5;for(let i=0;i<=4;i++){const y=pT+(ch/4)*i;ctx.beginPath();ctx.moveTo(pL,y);ctx.lineTo(W-pR,y);ctx.stroke();const v=maxV-(maxV-minV)*(i/4);ctx.fillStyle='#9a7a7a';ctx.font='10px "Zen Maru Gothic"';ctx.textAlign='right';ctx.fillText(chartMode==='weight'?Math.round(v)+'g':v.toFixed(1)+'cm',pL-6,y+4)}if(data.length===1){const x=pL+cw/2,y=pT+ch/2;ctx.fillStyle='#d4708a';ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#4a3030';ctx.font='10px "Zen Maru Gothic"';ctx.textAlign='center';ctx.fillText(vals[0]+(chartMode==='weight'?'g':'cm'),x,y-10);ctx.fillText(data[0].date.slice(5).replace('-','/'),x,H-8);return}ctx.strokeStyle='#d4708a';ctx.lineWidth=2;ctx.lineJoin='round';ctx.beginPath();data.forEach((r,i)=>{const x=pL+(cw/(data.length-1))*i,v=chartMode==='weight'?r.weight:r.height,y=pT+ch-((v-minV)/(maxV-minV))*ch;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});ctx.stroke();ctx.globalAlpha=.08;ctx.fillStyle='#d4708a';ctx.lineTo(pL+cw,pT+ch);ctx.lineTo(pL,pT+ch);ctx.fill();ctx.globalAlpha=1;data.forEach((r,i)=>{const x=pL+(cw/(data.length-1))*i,v=chartMode==='weight'?r.weight:r.height,y=pT+ch-((v-minV)/(maxV-minV))*ch;ctx.fillStyle='#d4708a';ctx.beginPath();ctx.arc(x,y,3.5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#9a7a7a';ctx.font='9px "Zen Maru Gothic"';ctx.textAlign='center';const show=data.length<=10||i%Math.ceil(data.length/8)===0||i===data.length-1;if(show)ctx.fillText(r.date.slice(5).replace('-','/'),x,H-8)})}
+function renderGrowth(){const data=load('mito_growth'),latest=data.length?data[data.length-1]:null;document.getElementById('growthWeight').textContent=latest&&latest.weight?latest.weight:'--';document.getElementById('growthHeight').textContent=latest&&latest.height?latest.height:'--';document.getElementById('growthHead').textContent=latest&&latest.head?latest.head:'--';if(latest&&latest.weight){const diff=latest.weight-BIRTH_W;document.getElementById('growthDiff').textContent=(diff>=0?'+':'')+diff}else{document.getElementById('growthDiff').textContent='--'}const el=document.getElementById('growthLog');if(!data.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-light);font-size:.8rem">まだ記録がありません</div>';drawChart();return}let h='';[...data].reverse().forEach(r=>{let det='';if(r.weight)det+=r.weight+'g';if(r.height)det+=(det?' / ':'')+r.height+'cm';if(r.head)det+=(det?' / ':'')+'頭囲'+r.head+'cm';h+='<div class="log-item"><div class="log-time">'+r.date.slice(5).replace('-','/')+'</div><div class="log-body"><span class="log-detail">生後'+daysSince(r.date)+'日　'+det+'</span>'+(r.memo?'<div class="log-memo">'+r.memo+'</div>':'')+'</div>'+(r.id!==1?'<button class="log-delete" data-key="mito_growth" data-id="'+r.id+'">&#10005;</button>':'')+'</div>'});el.innerHTML=h;drawChart()}
 
-// ===== DELETE =====
+// DELETE
 document.addEventListener('click',async e=>{if(!e.target.classList.contains('log-delete'))return;if(!confirm('この記録を削除しますか？'))return;const k=e.target.dataset.key,id=parseInt(e.target.dataset.id);await save(k,load(k).filter(r=>r.id!==id));({mito_milk:renderMilk,mito_diaper:renderDiaper,mito_temp:renderTemp,mito_sleep:renderSleep,mito_growth:renderGrowth})[k]()});
 </script>
-</div><!-- end appMain -->
 </body>
 </html>
